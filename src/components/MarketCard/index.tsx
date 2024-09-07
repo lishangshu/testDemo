@@ -2,26 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import InputCard from '../InputCard';
 
-import {
-	USDT_ERC20,
-	USDTVAULT_ERC20
-} from '@/commons/config.ts'
-
-import {
-	config
-} from '@/wagmi.ts'
-
-import {
-	readContract,
-	writeContract,
-	watchContractEvent,
-	watchChainId,
-	getBlockNumber,
-	getTransaction,
-	getTransactionReceipt,
-	getAccount
-} from '@wagmi/core'
-
 interface MarketCardProps {
     logo: string;
     subLogo: string;
