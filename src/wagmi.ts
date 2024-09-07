@@ -12,7 +12,7 @@ export const config = getDefaultConfig({
   appName: 'RainbowKit App',
   projectId: 'a773ff2a52c3ddc6fa236114e5b4f1d7',
   chains: [
-	  sepolia
+    sepolia
     // mainnet,
     // polygon,
     // optimism,
