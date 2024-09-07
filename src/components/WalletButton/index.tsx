@@ -4,6 +4,51 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { FaCopy } from "react-icons/fa";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { signTypedData, watchConnections } from '@wagmi/core'
+import { config } from '@/wagmi'
+
+function sign() {
+	return signTypedData(config, {
+	  types: {
+		Person: [
+		  { name: 'name', type: 'string' },
+		  { name: 'wallet', type: 'address' },
+		],
+		Mail: [
+		  { name: 'from', type: 'Person' },
+		  { name: 'to', type: 'Person' },
+		  { name: 'contents', type: 'string' },
+		],
+	  },
+	  primaryType: 'Mail',
+	  message: {
+		from: {
+		  name: 'Cow',
+		  wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
+		},
+		to: {
+		  name: 'Bob',
+		  wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
+		},
+		contents: 'Hello, Bob!',
+	  },
+	})
+}
+
+watchConnections(config, {
+  onChange(data) {
+    console.log('Connections changed!', data)
+	if (data.length) {
+		sign().then(res => {
+			console.log('sign result', res)
+			//do login
+			//todo
+		}).catch(err => {
+			console.error('Sign denied', err)
+		})
+	}
+  },
+})
 
 const WalletButton: React.FC = () => {
     const { address, isConnected } = useAccount();
