@@ -1,6 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import InputCard from '../InputCard';
+import {
+	USDTVAULT_ERC20,
+	USDT_ERC20
+} from '@/commons/config'
+import {
+	readContract,
+	writeContract,
+	getTransactionReceipt,
+	getAccount
+} from '@wagmi/core'
+import {config} from '@/wagmi'
 
 interface MarketCardProps {
     logo: string;
@@ -17,7 +28,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ logo, subLogo, coinName, apy, t
 	const [state, setState] = useState(0)
 	const [busy, setBusy] = useState(false)
 	const pid = 5
-	const inputAmount = 10
+	const inputAmount = 100
 	
 	function getPoolInfo() {
 		return readContract(config, {
@@ -149,7 +160,8 @@ const MarketCard: React.FC<MarketCardProps> = ({ logo, subLogo, coinName, apy, t
 				return
 			}
 			const allowance = await getAllowance()
-			if (amount < allowance) {
+			console.log('allowance', allowance)
+			if (allowance < amount) {
 				setState(1)
 				var hash = await approving(amount)
 				if (await success(hash)) {
@@ -178,52 +190,6 @@ const MarketCard: React.FC<MarketCardProps> = ({ logo, subLogo, coinName, apy, t
 		}catch(e){
 			console.error(e)
 			//toast todo
-		}finally{
-			setBusy(false)
-			setState(0)
-		}
-	}
-	
-	function redeeming() {
-		const account = getAccount(config)
-		return writeContract(config, {
-			abi: USDTVAULT_ERC20.abi,
-			address: USDTVAULT_ERC20.address,
-			functionName: 'redeem',
-			args: [
-				pid
-			],
-			account: account.address
-		})
-	}
-	
-	async function handleRedeem() {
-		if (busy) {
-			return
-		}
-		setBusy(true)
-		try{
-			const poolState = await getPoolState()
-			console.log('pool state', poolState)
-			if (poolState != 2) {
-				console.warn('The product has not yet expired')
-				//$toast('The product has not yet expired')
-				//todo
-				return
-			}
-			setState(1)
-			const hash = await redeeming()
-			if (await success(hash)) {
-				console.log('Redeem succeed')
-				//toast success todo
-			} else {
-				console.warn('Redeem failed')
-				//toast failed todo
-			}
-		}catch(e){
-			console.error(e)
-			//toast error
-			//todo
 		}finally{
 			setBusy(false)
 			setState(0)

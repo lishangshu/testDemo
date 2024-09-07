@@ -1,5 +1,16 @@
 import Image from 'next/image';
 import moment from 'moment';
+import {
+	USDTVAULT_ERC20,
+	USDT_ERC20
+} from '@/commons/config'
+import {
+	readContract,
+	writeContract,
+	getTransactionReceipt,
+	getAccount
+} from '@wagmi/core'
+import {config} from '@/wagmi'
 
 export const dataSource = [
     {
@@ -138,7 +149,92 @@ export const DetailColumns = [
     }
 ]
 
-const handleRedeem = (value: any) => { }
+
+// const [state, setState] = useState(0)
+// const [busy, setBusy] = useState(false)
+const pid = 2
+
+async function success(hash) {
+	var retry = 5
+	while (retry > 0) {
+		try {
+			const res = await getTransactionReceipt(config, {
+				hash
+			})
+			console.log('getTransactionReceipt', res)
+			if (res) {
+				return res.status == 'success'
+			}
+			retry--
+		} catch(e) {
+			console.log(e)
+			await new Promise((resolve, reject) => {
+				setTimeout(() => {
+					resolve()
+				}, 1000)
+			})
+		}
+	}
+}
+
+function getPoolState() {
+	return readContract(config, {
+		abi: USDTVAULT_ERC20.abi,
+		address: USDTVAULT_ERC20.address,
+		functionName: 'poolState',
+		args: [pid]
+	})
+}
+
+function redeeming() {
+	const account = getAccount(config)
+	return writeContract(config, {
+		abi: USDTVAULT_ERC20.abi,
+		address: USDTVAULT_ERC20.address,
+		functionName: 'redeem',
+		args: [
+			pid
+		],
+		account: account.address
+	})
+}
+
+async function handleRedeemInternal(value: any) {
+	// if (busy) {
+	// 	return
+	// }
+	// setBusy(true)
+	try{
+		const poolState = await getPoolState()
+		console.log('pool state', poolState)
+		if (poolState != 2) {
+			console.warn('The product has not yet expired')
+			//$toast('The product has not yet expired')
+			//todo
+			return
+		}
+		// setState(1)
+		const hash = await redeeming()
+		if (await success(hash)) {
+			console.log('Redeem succeed')
+			//toast success todo
+		} else {
+			console.warn('Redeem failed')
+			//toast failed todo
+		}
+	}catch(e){
+		console.error(e)
+		//toast error
+		//todo
+	}finally{
+		// setBusy(false)
+		// setState(0)
+	}
+}
+
+const handleRedeem = (value: any) => {
+	handleRedeemInternal(value)
+}
 
 export const switchColumns = (type: 'defi' | 'transactions' | 'detail') => {
     switch (type) {
