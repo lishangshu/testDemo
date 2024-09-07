@@ -2,26 +2,6 @@ import React from 'react';
 import Image from 'next/image';
 import InputCard from '../InputCard';
 
-import {
-	USDT_ERC20,
-	USDTVAULT_ERC20
-} from '@/commons/config.ts'
-
-import {
-	config
-} from '@/wagmi.ts'
-
-import {
-	readContract,
-	writeContract,
-	watchContractEvent,
-	watchChainId,
-	getBlockNumber,
-	getTransaction,
-	getTransactionReceipt,
-	getAccount
-} from '@wagmi/core'
-
 interface MarketCardProps {
     logo: string;
     subLogo: string;
@@ -34,36 +14,6 @@ interface MarketCardProps {
 }
 
 const MarketCard: React.FC<MarketCardProps> = ({ logo, subLogo, coinName, apy, tvl, network, date, rate }) => {
-	
-	const pid = 0
-	
-	function getPoolInfo() {
-		return readContract(config, {
-			abi: USDTVAULT_ERC20.abi,
-			address: USDTVAULT_ERC20.address,
-			functionName: 'pools',
-			args: [pid]
-		})
-	}
-	
-	function queryBalance() {
-		const account = getAccount()
-		console.log('account', account)
-		return readContract(config, {
-			abi: USDT_ERC20.abi,
-			address: USDT_ERC20.address,
-			functionName: 'balanceOf',
-			args: [account.address]
-		})
-	}
-	
-	async function handleInvest() {
-		console.log('handle invest')
-		const poolState = await getPoolInfo()
-		console.log('pool state', poolState)
-		const balance = await queryBalance()
-	}
-	
     return (
         <div className="w-[500px] h-[473px]">
             <div className="w-full h-[90px] px-4 flex justify-between items-center mb-[5px] bg-market-card-bg rounded-card shadow-card text-primary">
@@ -113,7 +63,7 @@ const MarketCard: React.FC<MarketCardProps> = ({ logo, subLogo, coinName, apy, t
                 </div>
             </div>
             <InputCard logo={logo} coinName={coinName} rate={rate || 1} network={network} />
-            <div onClick={handleInvest} className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover">
+            <div className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover">
                 Invest
             </div>
         </div>
