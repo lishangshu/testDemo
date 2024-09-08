@@ -38,7 +38,7 @@ function sign() {
 watchConnections(config, {
   onChange(data) {
     console.log("Connections changed!", data);
-	const isLogin = true
+    const isLogin = true;
     if (!isLogin && data.length) {
       sign()
         .then((res) => {
