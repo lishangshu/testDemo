@@ -6,6 +6,8 @@ import { FaCopy } from "react-icons/fa";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { signTypedData, watchConnections } from "@wagmi/core";
 import { config } from "@/wagmi";
+import { useRouter } from "next/router"; // 用于页面跳转
+
 
 function sign() {
   return signTypedData(config, {
@@ -59,6 +61,7 @@ const WalletButton: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const router = useRouter(); // 用于跳转
 
   // 点击外部关闭菜单
   useEffect(() => {
@@ -90,7 +93,9 @@ const WalletButton: React.FC = () => {
     setIsCopied(true); // 设置已复制状态
     setTimeout(() => setIsCopied(false), 2000); // 2秒后重置已复制状态
   };
-
+  const handlePort = () => {
+    router.push('/portfolio')
+  }
   return (
     <div className="relative flex items-center space-x-2">
       {isConnected ? (
@@ -137,6 +142,12 @@ const WalletButton: React.FC = () => {
                 {isCopied && (
                   <li className="text-center text-green-500">地址已复制</li>
                 )}
+                <li
+                  className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                  onClick={() => handlePort()}
+                >
+                  My Portfolio
+                </li>
                 <li
                   className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
                   onClick={handleDisconnect}

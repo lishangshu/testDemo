@@ -123,6 +123,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
   async function handleInvest() {
     console.log("handle invest");
     const account = await getAccount(config);
+    console.log('account',account);
     if (!account) {
       console.warn("Please connect wallet first");
       //toast connect wallet
