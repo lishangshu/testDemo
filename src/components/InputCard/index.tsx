@@ -7,13 +7,14 @@ interface InputCardProps {
     coinName: string;
     rate: number;
     network: string;
+	onChange: (value: number) => void;
 }
 
-const InputCard: React.FC<InputCardProps> = ({ logo, coinName, rate, network }) => {
+const InputCard: React.FC<InputCardProps> = ({ logo, coinName, rate, network, onChange }) => {
     return (
         <div className="w-full h-[312px] bg-market-card-bg shadow-card p-4 rounded-card mb-[6px] text-primary">
             {/* 输入和余额部分 */}
-            <InputBalance logo={logo} coinName={coinName} rate={rate} maxValue={100} />
+            <InputBalance logo={logo} coinName={coinName} rate={rate} maxValue={100} onChange={onChange} />
 
             {/* 估计收益和奖励部分 */}
             <div className='w-full flex flex-col items-center justify-around text-secondary font-500 px-[52px]'>

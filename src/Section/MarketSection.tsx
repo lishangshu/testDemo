@@ -18,6 +18,7 @@ const MarketSection = () => {
             apy="23.57"
             tvl="10.5M"
             network="Ethereum"
+			pid={6}
           />
           <MarketCard
             logo="/solana.png"
@@ -26,6 +27,7 @@ const MarketSection = () => {
             apy="23.57"
             tvl="10.5M"
             network="Ethereum"
+			pid={0}
           />
           <MarketCard
             logo="/tether.png"
@@ -34,6 +36,7 @@ const MarketSection = () => {
             apy="23.57"
             tvl="10.5M"
             network="Ethereum"
+			pid={0}
           />
           <MarketCard
             logo="/usdc.png"
@@ -42,6 +45,7 @@ const MarketSection = () => {
             apy="23.57"
             tvl="10.5M"
             network="Ethereum"
+			pid={0}
           />
         </div>
       </div>

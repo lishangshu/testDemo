@@ -20,6 +20,7 @@ interface MarketCardProps {
   network: string;
   date?: string;
   rate?: number;
+  pid: number;
 }
 
 const MarketCard: React.FC<MarketCardProps> = ({
@@ -31,11 +32,11 @@ const MarketCard: React.FC<MarketCardProps> = ({
   network,
   date,
   rate,
+  pid
 }) => {
   const [state, setState] = useState(0);
   const [busy, setBusy] = useState(false);
-  const pid = 5;
-  const inputAmount = 100;
+  const [inputAmount, setInputAmount] = useState(0);
 
   function getPoolInfo() {
     return readContract(config, {
@@ -102,7 +103,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
     while (retry > 0) {
       try {
         const res = await getTransactionReceipt(config, {
-          hash,
+          hash
         });
         console.log("getTransactionReceipt", res);
         if (res) {
@@ -110,7 +111,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
         }
         retry--;
       } catch (e) {
-        console.log(e);
+        console.error(e, config);
         await new Promise((resolve, reject) => {
           setTimeout(() => {
             resolve();
@@ -166,9 +167,11 @@ const MarketCard: React.FC<MarketCardProps> = ({
       if (allowance < amount) {
         setState(1);
         var hash = await approving(amount);
+		console.log('approving resolved.hash is ', hash)
         if (await success(hash)) {
           setState(2);
           hash = await investing(amount);
+		  console.log('investing resolved.hash is ', hash)
           if (await success(hash)) {
             console.log("Invest succeed");
             //toast success todo
@@ -197,6 +200,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
       setState(0);
     }
   }
+  
   return (
     <div className="w-[500px] h-[473px]">
       <div className="w-full h-[90px] px-4 flex justify-between items-center mb-[5px] bg-market-card-bg rounded-card shadow-card text-primary">
@@ -249,13 +253,11 @@ const MarketCard: React.FC<MarketCardProps> = ({
         coinName={coinName}
         rate={rate || 1}
         network={network}
+		onChange={(value) => setInputAmount(value)}
       />
-      <div
-        onClick={handleInvest}
-        className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover"
-      >
-        Invest
-      </div>
+	  <div onClick={handleInvest} className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover">
+		  {state == 0 ? 'Invest' : state == 1 ? 'Approving' : 'Investing'}
+	  </div>
     </div>
   );
 };
