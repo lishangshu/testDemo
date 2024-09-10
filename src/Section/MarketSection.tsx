@@ -15,7 +15,9 @@ const MarketSection = () => {
             logo="/avax.png"
             subLogo="/aave.png"
             coinName="AVAX"
-            apy="23.57"
+            apy={23.57}
+			cycle={7}
+			maturity="2024-09-15T07:58:00"
             tvl="10.5M"
             network="Ethereum"
 			pid={6}
@@ -24,7 +26,9 @@ const MarketSection = () => {
             logo="/solana.png"
             subLogo="/aave.png"
             coinName="SOL"
-            apy="23.57"
+            apy={23.57}
+			cycle={10}
+			maturity="2024-09-15T07:58:00"
             tvl="10.5M"
             network="Ethereum"
 			pid={0}
@@ -33,7 +37,9 @@ const MarketSection = () => {
             logo="/tether.png"
             subLogo="/aave.png"
             coinName="USDT"
-            apy="23.57"
+            apy={23.57}
+			cycle={15}
+			maturity="2024-09-20T07:58:00"
             tvl="10.5M"
             network="Ethereum"
 			pid={0}
@@ -42,7 +48,9 @@ const MarketSection = () => {
             logo="/usdc.png"
             subLogo="/aave.png"
             coinName="USDC"
-            apy="23.57"
+            apy={23.57}
+			cycle={30}
+			maturity="2024-09-20T07:58:00"
             tvl="10.5M"
             network="Ethereum"
 			pid={0}
