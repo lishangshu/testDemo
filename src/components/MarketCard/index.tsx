@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import InputCard from "../InputCard";
+import moment from 'moment';
 
 import { USDTVAULT_ERC20, USDT_ERC20 } from "@/commons/config";
 import {
@@ -15,10 +16,11 @@ interface MarketCardProps {
   logo: string;
   subLogo: string;
   coinName: string;
-  apy: string;
+  apy: number;
+  cycle: number;
+  maturity: string;
   tvl: string;
   network: string;
-  date?: string;
   rate?: number;
   pid: number;
 }
@@ -28,9 +30,10 @@ const MarketCard: React.FC<MarketCardProps> = ({
   subLogo,
   coinName,
   apy,
+  cycle,
+  maturity,
   tvl,
   network,
-  date,
   rate,
   pid
 }) => {
@@ -245,7 +248,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
             <Image src={"/eth.svg"} width={16} height={16} alt="eth" />
             <p className="text-primary text-desc font-500">{network}</p>
           </div>
-          <p className="text-desc text-secondary">Date: {date}</p>
+          <p className="text-desc text-secondary">Date: {moment(maturity).format('ll')}</p>
         </div>
       </div>
       <InputCard
@@ -253,6 +256,9 @@ const MarketCard: React.FC<MarketCardProps> = ({
         coinName={coinName}
         rate={rate || 1}
         network={network}
+		apy={apy}
+		cycle={cycle}
+		maturity={maturity}
 		onChange={(value) => setInputAmount(value)}
       />
 	  <div onClick={handleInvest} className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover">
