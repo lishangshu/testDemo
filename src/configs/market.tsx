@@ -132,7 +132,7 @@ export const pointsRecordColumns = [
     render: (value: any) => {
       return (
         <span className="w-full text-primary flex items-center justify-start">
-          {value == 1?"是":"否"}
+          {value == 1?"Refarral":value == 2?"Staking":""}
         </span>
       );
     },
@@ -175,7 +175,7 @@ export const referralDetailColumns = [
     render: (value: any) => {
       return (
         <span className="w-full text-primary flex items-center justify-center">
-          {value == 1?"是":"否"}
+          {value == 1?"Refarral":value == 2?"Staking":""}
         </span>
       );
     },

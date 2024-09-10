@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/rules-of-hooks */
 import type { NextPage } from "next";
 import Head from "next/head";
 import { Header } from "@/components/Header";
@@ -6,26 +8,11 @@ import Earn from "@/components/Earn";
 import { Footer } from "@/components/Footer";
 import CardSection from "@/Section/CardSection";
 import { useTranslation } from "react-i18next";
-import { gql, useQuery } from "@apollo/client";
-const GET_USERS = gql`
-  query {
-    pointLogs(input: { userId: "1", pageSize: 10, pageNum: 0 }) {
-      id
-      userId
-      pointChange
-      type
-      createdAt
-      updatedAt
-      deletedAt
-    }
-  }
-`;
-
+import { useEffect } from "react";
+import { useGetUserInfo} from '@/http/api';
 const Home: NextPage = () => {
   const { t } = useTranslation("common");
-  const { loading, error, data } = useQuery(GET_USERS);
-  console.log("--------data--------", data);
-
+  useGetUserInfo();
   return (
     <div>
       <Head>
