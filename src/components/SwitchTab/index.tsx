@@ -58,7 +58,7 @@ const SwitchTab: FC<SwitchTabProps> = ({ type = "normal" }) => {
           goMasrket("pointMarkets");
           toggleMenu()
         }}
-        className={`w-full py-3 px-4 rounded-[6px] cursor-pointer text-center ${
+        className={`whitespace-nowrap w-full py-3 px-4 rounded-[6px] cursor-pointer text-center ${
           activeTab === "pointMarkets"
             ? "bg-activeTab text-primary"
             : "text-activeTab"
@@ -69,7 +69,7 @@ const SwitchTab: FC<SwitchTabProps> = ({ type = "normal" }) => {
 
       {/* 点击图标触发菜单 */}
       {isMenuOpen && (
-        <div className="relative ml-[0px] mt-[28px]" ref={menuRef}>
+        <div className="relative ml-[10px] mt-[28px]" ref={menuRef}>
           <div className="absolute top-full right-0 mt-2 bg-thirdary text-primary text-desc rounded-lg shadow-lg z-10 w-[200px]">
             <ul className="text-sm">
             <li
