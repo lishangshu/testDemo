@@ -15,8 +15,7 @@ import Image from "next/image";
 import Referral from "@/components/Referral";
 import { useTranslation } from "react-i18next";
 import Router from "next/router";
-import api from "@/http/axios";
-
+import { fetchPointsRecordTableData, fetchPointsReferralTableData } from '@/http/api';
 type PointsMarketSectionProps = {
   type: "pointsMarket" | "referral" | "myRewards" | "rewardCenter";
 };
@@ -42,16 +41,37 @@ const PointsMarketSection: FC<PointsMarketSectionProps> = ({ type }) => {
         return t("reward-center");
     }
   };
+
   const [activeData, setActiveData] = useState([]);
-  const getList = async () => {
-    const response = await api.get("/api/list");
-    console.log("kkkk", response.data);
-    setActiveData(response.data);
-    console.log("activeCard", activeData);
+  const changePointTab = (type:string)=>{
+    console.log(type)
+    if(type == 'pointsRecord'){
+      loadPointData()
+    }
+    if(type == 'referralDetail'){
+      loadReferralData()
+    }
+  }
+
+  const [pointsRecordDataSource, setPointsRecordDataSource] = useState([]); // My points->Points Record
+  const loadPointData = async () => {
+    const data = await fetchPointsRecordTableData();
+    setPointsRecordDataSource(data)
   };
+
+  const [referralDetailDataSource, setreferralDetailDataSource] = useState([]); // My points->Referral Detail
+  const loadReferralData = async () => {
+    const data = await fetchPointsReferralTableData();
+    setreferralDetailDataSource(data)
+  };
+
   useEffect(() => {
-    getList();
+    console.log('9999',type)
+    if(type == 'myRewards'){
+      loadPointData();
+    }
   }, []);
+  
   return (
     <section className="bg-bg-primary w-full min-h-screen py-[135px] px-[105px]">
       <h1 className="text-[34px] font-800 text-primary mb-[85px]">{title()}</h1>
@@ -184,6 +204,7 @@ const PointsMarketSection: FC<PointsMarketSectionProps> = ({ type }) => {
                 }`}
                 onClick={() => {
                   setActiveTab(tab as "pointsRecord" | "referralDetail");
+                  changePointTab(tab as "pointsRecord" | "referralDetail")
                 }}
               >
                 {tab === "pointsRecord"

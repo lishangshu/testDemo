@@ -22,44 +22,45 @@ export const marketDataSource = [
   },
 ];
 
-export const pointsRecordDataSource = [
-  {
-    date: Date.now(),
-    details: "Activity 1",
-    rewards: "100",
-  },
-  {
-    date: Date.now(),
-    details: "Activity 2",
-    rewards: "200",
-  },
-  {
-    date: Date.now(),
-    details: "Activity 3",
-    rewards: "300",
-  },
-];
+// My-point/points-record 数据源
+// export const pointsRecordDataSource = [
+//   {
+//     date: Date.now(),
+//     details: "Activity 1",
+//     rewards: "100",
+//   },
+//   {
+//     date: Date.now(),
+//     details: "Activity 2",
+//     rewards: "200",
+//   },
+//   {
+//     date: Date.now(),
+//     details: "Activity 3",
+//     rewards: "300",
+//   },
+// ];
 
-export const referralDetailDataSource = [
-  {
-    date: Date.now(),
-    address: "0x73fh387w087e0qbv876653h9vn30",
-    type: "Type 1",
-    rewards: "100",
-  },
-  {
-    date: Date.now(),
-    address: "0x73fh387w087e0qbv876653h9vn30",
-    type: "Type 2",
-    rewards: "200",
-  },
-  {
-    date: Date.now(),
-    address: "0x73fh387w087e0qbv876653h9vn30",
-    type: "Type 3",
-    rewards: "300",
-  },
-];
+// export const referralDetailDataSource = [
+//   {
+//     date: Date.now(),
+//     address: "0x73fh387w087e0qbv876653h9vn30",
+//     type: "Type 1",
+//     rewards: "100",
+//   },
+//   {
+//     date: Date.now(),
+//     address: "0x73fh387w087e0qbv876653h9vn30",
+//     type: "Type 2",
+//     rewards: "200",
+//   },
+//   {
+//     date: Date.now(),
+//     address: "0x73fh387w087e0qbv876653h9vn30",
+//     type: "Type 3",
+//     rewards: "300",
+//   },
+// ];
 
 export const rewardCenterDataSource = [
   {
@@ -112,11 +113,12 @@ export const marketColumns = [
   },
 ];
 
+// My-point/points-record
 export const pointsRecordColumns = [
   {
     title: <span className="flex items-center justify-start">Date</span>,
-    dataIndex: "date",
-    key: "date",
+    dataIndex: "createdAt",
+    key: "createdAt",
     render: (value: RowObject["date"]) => (
       <span className="w-full text-primary flex items-center justify-start">
         {moment(value).format("YYYY.MM.DD HH:mm")}
@@ -125,13 +127,20 @@ export const pointsRecordColumns = [
   },
   {
     title: "Details",
-    dataIndex: "details",
-    key: "details",
+    dataIndex: "type",
+    key: "type",
+    render: (value: any) => {
+      return (
+        <span className="w-full text-primary flex items-center justify-start">
+          {value == 1?"是":"否"}
+        </span>
+      );
+    },
   },
   {
     title: <span className="flex items-center justify-center">Points</span>,
-    dataIndex: "rewards",
-    key: "rewards",
+    dataIndex: "pointChange",
+    key: "pointChange",
     render: (value: any) => {
       return (
         <span className="w-full text-primary flex items-center justify-center">
@@ -142,11 +151,12 @@ export const pointsRecordColumns = [
   },
 ];
 
+// My Points-Points Record
 export const referralDetailColumns = [
   {
     title: <span className="flex items-center justify-start">Date</span>,
-    dataIndex: "date",
-    key: "date",
+    dataIndex: "updateAt",
+    key: "updateAt",
     render: (value: RowObject["date"]) => (
       <span className="w-full text-primary flex items-center justify-start">
         {moment(value).format("YYYY.MM.DD HH:mm")}
@@ -155,21 +165,25 @@ export const referralDetailColumns = [
   },
   {
     title: "Address",
-    dataIndex: "address",
-    key: "address",
+    dataIndex: "userId",
+    key: "userId",
   },
   {
     title: <span className="flex items-center justify-center">Type</span>,
     dataIndex: "type",
     key: "type",
-    render: (value: any) => (
-      <span className="w-full flex items-center justify-center">{value}</span>
-    ),
+    render: (value: any) => {
+      return (
+        <span className="w-full text-primary flex items-center justify-center">
+          {value == 1?"是":"否"}
+        </span>
+      );
+    },
   },
   {
     title: <span className="flex items-center justify-center">Points</span>,
-    dataIndex: "rewards",
-    key: "rewards",
+    dataIndex: "pointChange",
+    key: "pointChange",
     render: (value: any) => {
       return (
         <span className="w-full text-primary flex items-center justify-center">
