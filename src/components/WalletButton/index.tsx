@@ -6,29 +6,54 @@ import { FaCopy } from "react-icons/fa";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { watchConnections, signMessage } from "@wagmi/core";
 import { config } from "@/wagmi";
+import {
+  getAccount,
+  disconnect
+} from "@wagmi/core";
 import { useRouter } from "next/router"; // 用于页面跳转
+import { login, getSignContent } from '@/http/user'
+import { toast } from 'react-toastify'
 
+var busy = false
 
 function sign(message = '') {
   return signMessage(config, {
-	  message
+    message
   })
 }
 
-watchConnections(config, {
-  onChange(data) {
+console.log('xxxxxxxxxxxxxxxxxxxxxxxxx')
+const unwatch = watchConnections(config, {
+  async onChange(data) {
     console.log("Connections changed!", data);
-    const isLogin = true;
-    if (!isLogin && data.length) {
-      sign()
-        .then((res) => {
-          console.log("sign result", res);
-          //do login
-          //todo
+    const isLogin = !!localStorage.getItem('token');
+    if (isLogin && !data.length)  {
+      localStorage.removeItem('token')
+      return
+    }
+    if (!isLogin && data.length && !busy) {
+      try {
+        busy = true
+        const content = await getSignContent()
+        console.log('getSignContent', content)
+        const signature = await sign(content.text)
+        console.log('sign result', signature)
+        const res = await login({
+          walletAddr: getAccount(config).address,
+          text: content.text,
+          signature
         })
-        .catch((err) => {
-          console.error("Sign denied", err);
-        });
+        console.log('login success', res)
+        localStorage.setItem('token', res.token)
+        toast.success('login succeed')
+      } catch (err) {
+        console.log('login failed', err)
+        toast.error(err.message)
+        disconnect(config); // 断开连接
+        localStorage.removeItem('token')
+      } finally {
+        busy = false
+      }
     }
   },
 });
@@ -40,6 +65,8 @@ const WalletButton: React.FC = () => {
   const [isCopied, setIsCopied] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter(); // 用于跳转
+
+  
 
   // 点击外部关闭菜单
   useEffect(() => {
@@ -59,6 +86,7 @@ const WalletButton: React.FC = () => {
   const handleDisconnect = () => {
     disconnect(); // 断开连接
     setIsMenuOpen(false); // 关闭菜单
+    localStorage.removeItem('token')
   };
 
   const toggleMenu = () => {

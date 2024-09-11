@@ -7,6 +7,16 @@ import Loading from "@/components/Loading";
 import { useTranslation } from "react-i18next";
 import { useBalance, useAccount } from "wagmi";
 
+import { toast } from 'react-toastify'
+import { USDTVAULT_ERC20, USDT_ERC20 } from "@/commons/config";
+import {
+  readContract,
+  writeContract,
+  getTransactionReceipt,
+  getAccount,
+} from "@wagmi/core";
+import { config } from "@/wagmi";
+
 const AssetSection = () => {
   const { t } = useTranslation("common");
   const [selectedTab, setSelectedTab] = useState<"info" | "apy">("info");
@@ -23,18 +33,172 @@ const AssetSection = () => {
 
   const rate = 1;
 
-  const handleInvest = () => {
-    setStep(1);
-  };
+  const [busy, setBusy] = useState(false);
 
-  const handleApprove = () => {
-    // Mock
-    setIsLoading(true);
+  function getPoolInfo() {
+    return readContract(config, {
+      abi: USDTVAULT_ERC20.abi,
+      address: USDTVAULT_ERC20.address,
+      functionName: "pools",
+      args: [pid],
+    });
+  }
 
-    setInterval(() => {
-      setIsLoading(false);
-    }, 5000);
-  };
+  function getPoolState() {
+    return readContract(config, {
+      abi: USDTVAULT_ERC20.abi,
+      address: USDTVAULT_ERC20.address,
+      functionName: "poolState",
+      args: [pid],
+    });
+  }
+
+  function queryBalance() {
+    const account = getAccount(config);
+    console.log("account", account);
+    return readContract(config, {
+      abi: USDT_ERC20.abi,
+      address: USDT_ERC20.address,
+      functionName: "balanceOf",
+      args: [account.address],
+    });
+  }
+
+  function getAllowance() {
+    const account = getAccount(config);
+    return readContract(config, {
+      abi: USDT_ERC20.abi,
+      address: USDT_ERC20.address,
+      functionName: "allowance",
+      args: [account.address, USDTVAULT_ERC20.address],
+    });
+  }
+
+  function investing(amount) {
+    const account = getAccount(config);
+    return writeContract(config, {
+      abi: USDTVAULT_ERC20.abi,
+      address: USDTVAULT_ERC20.address,
+      functionName: "invest",
+      args: [pid, amount],
+      account: account.address,
+    });
+  }
+
+  function approving(amount) {
+    const account = getAccount(config);
+    return writeContract(config, {
+      abi: USDT_ERC20.abi,
+      address: USDT_ERC20.address,
+      functionName: "approve",
+      args: [USDTVAULT_ERC20.address, amount],
+      account: account.address,
+    });
+  }
+  async function success(hash) {
+    var retry = 5;
+    while (retry > 0) {
+      try {
+        const res = await getTransactionReceipt(config, {
+          hash
+        });
+        console.log("getTransactionReceipt", res);
+        if (res) {
+          return res.status == "success";
+        }
+        retry--;
+      } catch (e) {
+        console.error(e, config);
+        await new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve();
+          }, 1000);
+        });
+      }
+    }
+  }
+
+  async function handleInvest() {
+    console.log("handle invest");
+    const account = await getAccount(config);
+    console.log('account', account);
+    if (!account.address) {
+      console.warn("Please connect wallet first");
+      toast.error('Please connect wallet first!')
+      return;
+    }
+    if (step == 0) {
+      setStep(1)
+      return
+    }
+    if (busy) {
+      return;
+    }
+    setBusy(true);
+    try {
+      const poolState = await getPoolState();
+      console.log("pool state", poolState);
+      if (poolState > 1) {
+        console.log("Product has been ended");
+        //toast todo
+        toast.error("Product has been ended")
+        return;
+      }
+      const balance = await queryBalance();
+      console.log("balance", balance);
+      if (inputValue <= 0) {
+        console.warn("Asset must bigger than zero");
+        toast.error("Asset must bigger than zero")
+        setBusy(false);
+        return;
+      }
+      const amount =
+        BigInt(inputValue) * BigInt(Math.pow(10, Number(USDT_ERC20.decimals)));
+      if (amount > balance) {
+        console.warn("Insufficient balance");
+        //$toast('Insufficient balance')
+        toast.error("Insufficient balance")
+        setBusy(false);
+        return;
+      }
+      const allowance = await getAllowance();
+      console.log("allowance", allowance);
+      if (allowance < amount) {
+        setStep(2);
+        var hash = await approving(amount);
+        console.log('approving resolved.hash is ', hash)
+        if (await success(hash)) {
+          setStep(3);
+          hash = await investing(amount);
+          console.log('investing resolved.hash is ', hash)
+          if (await success(hash)) {
+            console.log("Invest succeed");
+            toast.error("Invest succeed")
+          } else {
+            console.warn("Invest failed");
+            toast.error("Invest failed")
+          }
+          setStep(0);
+        }
+      } else {
+        setStep(3);
+        const hash = await investing(amount);
+        if (await success(hash)) {
+          console.log("Invest succeed");
+          toast.error("Invest succeed")
+        } else {
+          console.warn("Invest failed");
+          toast.error("Invest failed")
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error(e.message)
+    } finally {
+      setBusy(false);
+      setStep(0);
+    }
+  }
 
   return (
     <section className="w-full bg-thirdary flex items-start pt-[86px] px-[109px]">
@@ -77,17 +241,15 @@ const AssetSection = () => {
         <div className="flex space-x-6 mb-8">
           <div
             onClick={() => setSelectedTab("info")}
-            className={`px-[24px] py-[10px] text-primary cursor-pointer ${
-              selectedTab === "info" ? "bg-[#f1f1f1] rounded-[50px]" : ""
-            }`}
+            className={`px-[24px] py-[10px] text-primary cursor-pointer ${selectedTab === "info" ? "bg-[#f1f1f1] rounded-[50px]" : ""
+              }`}
           >
             Info
           </div>
           <div
             onClick={() => setSelectedTab("apy")}
-            className={`px-[24px] py-[10px] text-primary cursor-pointer ${
-              selectedTab === "apy" ? "bg-[#f1f1f1] rounded-[50px]" : ""
-            }`}
+            className={`px-[24px] py-[10px] text-primary cursor-pointer ${selectedTab === "apy" ? "bg-[#f1f1f1] rounded-[50px]" : ""
+              }`}
           >
             APY
           </div>
@@ -163,17 +325,15 @@ const AssetSection = () => {
         <div className="flex items-center mb-[31px] border border-[1px] border-[#E2E2E2] rounded-[50px]">
           <div
             onClick={() => setSelectedRedeem("invite")}
-            className={`m-[2px] px-[66px] py-[13px] text-primary cursor-pointer ${
-              selectedRedeem === "invite" ? "bg-[#f1f1f1] rounded-[50px]" : ""
-            }`}
+            className={`m-[2px] px-[66px] py-[13px] text-primary cursor-pointer ${selectedRedeem === "invite" ? "bg-[#f1f1f1] rounded-[50px]" : ""
+              }`}
           >
             {t("invite")}
           </div>
           <div
             onClick={() => setSelectedRedeem("redeem")}
-            className={`m-[2px] px-[66px] py-[13px] text-primary cursor-pointer ${
-              selectedRedeem === "redeem" ? "bg-[#f1f1f1] rounded-[50px]" : ""
-            }`}
+            className={`m-[2px] px-[66px] py-[13px] text-primary cursor-pointer ${selectedRedeem === "redeem" ? "bg-[#f1f1f1] rounded-[50px]" : ""
+              }`}
           >
             {t("redeem")}
           </div>
@@ -214,7 +374,7 @@ const AssetSection = () => {
               </span>
             </div>
 
-            {step === 1 && (
+            {(step === 1 || step === 2) && (
               <>
                 <div className="w-full h-[1px] bg-[#ededed] mt-[25px]"></div>
                 <div className="mt-[12px] w-full flex items-center justify-between">
@@ -223,26 +383,24 @@ const AssetSection = () => {
                     {t("ethereum")}
                   </span>
                 </div>
-                <div className="w-full flex items-center justify-between">
+                {/* <div className="w-full flex items-center justify-between">
                   <span className="text-[12px]">Investment Loss</span>
                   <span className="text-[14px] text-primary">
                     {(rate * inputValue).toFixed(2)}
                   </span>
-                </div>
+                </div> */}
               </>
             )}
           </div>
 
-          {step === 0 && (
-            <div
-              onClick={() => handleInvest()}
-              className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover capitalize"
-            >
-              {selectedRedeem}
-            </div>
-          )}
+          <div
+            onClick={() => handleInvest()}
+            className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover capitalize"
+          >
+            {step == 0 ? 'Invest' : step == 1 ? 'Step 1 of 2 : Approve USDC' : step == 2 ? (<Loading text='Approving' type="asset" />) : (<Loading text='Investing' type="asset" />)}
+          </div>
 
-          {step === 1 && (
+          {/* {(step === 1 || step === 2) && (
             <>
               <div className="mt-[15px] mb-[24px] w-full py-[14px] flex items-center justify-center gap-[19px] border border-[#EBEBEB] border-solid">
                 <div className="flex items-center text-[12px] font-500 text-primary gap-[5px]">
@@ -262,16 +420,15 @@ const AssetSection = () => {
               </div>
               {!isLoading ? (
                 <div
-                  onClick={handleApprove}
                   className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover"
                 >
                   Step 1 of 2 : Approve USDC
                 </div>
               ) : (
-                <Loading text={selectedRedeem} type="asset" />
+                <Loading text={step === 2 ? 'Approving' : step === 3 ? 'Investing' : ''} type="asset" />
               )}
             </>
-          )}
+          )} */}
         </div>
       </div>
     </section>

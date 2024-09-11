@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import InputCard from "../InputCard";
 import moment from 'moment';
+import { toast } from 'react-toastify'
 
 import { USDTVAULT_ERC20, USDT_ERC20 } from "@/commons/config";
 import {
@@ -127,11 +128,10 @@ const MarketCard: React.FC<MarketCardProps> = ({
   async function handleInvest() {
     console.log("handle invest");
     const account = await getAccount(config);
-    console.log('account',account);
-    if (!account) {
+    console.log('account', account);
+    if (!account.address) {
       console.warn("Please connect wallet first");
-      //toast connect wallet
-      //todo
+      toast.error('Please connect wallet first!')
       return;
     }
     if (busy) {
@@ -144,16 +144,14 @@ const MarketCard: React.FC<MarketCardProps> = ({
       if (poolState > 1) {
         console.log("Product has been ended");
         //toast todo
+        toast.error("Product has been ended")
         return;
       }
       const balance = await queryBalance();
       console.log("balance", balance);
       if (inputAmount <= 0) {
         console.warn("Asset must bigger than zero");
-        // uni.showToast({
-        // 	title: 'Asset must bigger than zero',
-        // 	icon: 'none'
-        // })
+        toast.error("Asset must bigger than zero")
         setBusy(false);
         return;
       }
@@ -162,6 +160,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
       if (amount > balance) {
         console.warn("Insufficient balance");
         //$toast('Insufficient balance')
+        toast.error("Insufficient balance")
         setBusy(false);
         return;
       }
@@ -170,17 +169,17 @@ const MarketCard: React.FC<MarketCardProps> = ({
       if (allowance < amount) {
         setState(1);
         var hash = await approving(amount);
-		console.log('approving resolved.hash is ', hash)
+        console.log('approving resolved.hash is ', hash)
         if (await success(hash)) {
           setState(2);
           hash = await investing(amount);
-		  console.log('investing resolved.hash is ', hash)
+          console.log('investing resolved.hash is ', hash)
           if (await success(hash)) {
             console.log("Invest succeed");
-            //toast success todo
+            toast.error("Invest succeed")
           } else {
             console.warn("Invest failed");
-            //toast failed todo
+            toast.error("Invest failed")
           }
           setState(0);
         }
@@ -189,21 +188,27 @@ const MarketCard: React.FC<MarketCardProps> = ({
         const hash = await investing(amount);
         if (await success(hash)) {
           console.log("Invest succeed");
-          //toast success todo
+          toast.error("Invest succeed")
         } else {
           console.warn("Invest failed");
-          //toast failed todo
+          toast.error("Invest failed")
         }
       }
     } catch (e) {
       console.error(e);
-      //toast todo
+      toast.error(e.message)
     } finally {
       setBusy(false);
       setState(0);
     }
   }
-  
+
+  // getPoolInfo().then(res => {
+  //   console.log('pool info', res)
+  // }).catch(err => {
+  //   console.error(err)
+  // })
+
   return (
     <div className="w-[500px] h-[473px]">
       <div className="w-full h-[90px] px-4 flex justify-between items-center mb-[5px] bg-market-card-bg rounded-card shadow-card text-primary">
@@ -256,14 +261,14 @@ const MarketCard: React.FC<MarketCardProps> = ({
         coinName={coinName}
         rate={rate || 1}
         network={network}
-		apy={apy}
-		cycle={cycle}
-		maturity={maturity}
-		onChange={(value) => setInputAmount(value)}
+        apy={apy}
+        cycle={cycle}
+        maturity={maturity}
+        onChange={(value) => setInputAmount(value)}
       />
-	  <div onClick={handleInvest} className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover">
-		  {state == 0 ? 'Invest' : state == 1 ? 'Approving' : 'Investing'}
-	  </div>
+      <div onClick={handleInvest} className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover">
+        {state == 0 ? 'Invest' : state == 1 ? 'Approving' : 'Investing'}
+      </div>
     </div>
   );
 };

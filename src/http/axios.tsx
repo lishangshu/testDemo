@@ -3,7 +3,7 @@ import axios from "axios";
 const api = axios.create({
   baseURL:
     process.env.NEXT_PUBLIC_API_URL ||
-    "https://dev.usemock.com/66db33fe5a1ccb9b834a98f8",
+    "http://k8s-shambhal-userserv-761d9ad8ad-722783552.eu-west-1.elb.amazonaws.com",
   // "http://47.115.60.170:8000/",
   timeout: 10000, // 设置请求超时时间
 });
