@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 
-import styles from "@/styles/MessageProvider.module.css";
+import styles from "@/styles/MessageProvider.module.scss";
 import Message from "@/components/Message";
 
 type MessageType = "error" | "success" | "warn" | "info";

@@ -11,6 +11,8 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { config } from "../wagmi";
 import { ApolloProvider } from "@apollo/client";
 import { clientconfig } from "../http/apolloClient";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const client = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -21,6 +23,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <QueryClientProvider client={client}>
             <RainbowKitProvider>
               <Component {...pageProps} />
+              <ToastContainer  position="top-right" autoClose={3000}/>
             </RainbowKitProvider>
           </QueryClientProvider>
         </ApolloProvider>
