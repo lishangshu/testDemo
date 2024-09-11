@@ -8,44 +8,8 @@ import Earn from "@/components/Earn";
 import { Footer } from "@/components/Footer";
 import CardSection from "@/Section/CardSection";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
-import { useGetUserInfo} from '@/http/api';
-import { useApolloClient, gql } from '@apollo/client';
-import { useAccount } from "wagmi";
-
-import useStore  from '@/store/index';
 const Home: NextPage = () => {
-  const { userInfo } = useStore();
   const { t } = useTranslation("common");
-  const client = useApolloClient();
-  // 获取积分信息
-  const refetchQuery = async (parms:any) => {
-    await client.query({
-      query: gql`
-      query {
-      getUser(input:{
-        id: ${parms.variables}
-      }) {
-        user {
-          id
-          address
-          hashKey
-          points
-          inviteCode
-          createdAt
-          updatedAt
-          deletedAt
-        }
-      }
-    }
-      `
-    });
-  };
-  useEffect(() => {
-    refetchQuery({
-      variables: 1
-    })
-  }, [])
   return (
     <div>
       <Head>

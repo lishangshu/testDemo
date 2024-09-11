@@ -13,7 +13,7 @@ import {
 import { useRouter } from "next/router"; // 用于页面跳转
 import { login, getSignContent } from '@/http/user'
 import { toast } from 'react-toastify'
-
+import useStore from '@/store/index';
 var busy = false
 
 function sign(message = '') {
@@ -22,52 +22,57 @@ function sign(message = '') {
   })
 }
 
-console.log('xxxxxxxxxxxxxxxxxxxxxxxxx')
-const unwatch = watchConnections(config, {
-  async onChange(data) {
-    console.log("Connections changed!", data);
-    const isLogin = !!localStorage.getItem('token');
-    if (isLogin && !data.length)  {
-      localStorage.removeItem('token')
-      return
-    }
-    if (!isLogin && data.length && !busy) {
-      try {
-        busy = true
-        const content = await getSignContent()
-        console.log('getSignContent', content)
-        const signature = await sign(content.text)
-        console.log('sign result', signature)
-        const res = await login({
-          walletAddr: getAccount(config).address,
-          text: content.text,
-          signature
-        })
-        console.log('login success', res)
-        localStorage.setItem('token', res.token)
-        toast.success('login succeed')
-      } catch (err) {
-        console.log('login failed', err)
-        toast.error(err.message)
-        disconnect(config); // 断开连接
-        localStorage.removeItem('token')
-      } finally {
-        busy = false
-      }
-    }
-  },
-});
-
 const WalletButton: React.FC = () => {
+  const { userInfo,updateUserInfo,isLogin,updateIsLogin } = useStore();
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter(); // 用于跳转
-
-  
-
+  console.log('xxxxxxxxxxxxxxxxxxxxxxxxx')
+  useEffect(()=>{
+    const unwatch = watchConnections(config, {
+      async onChange(data) {
+        console.log("Connections changed!", data);
+        const isLogin = !!localStorage.getItem('token');
+        if (isLogin && !data.length)  {
+          localStorage.removeItem('token')
+          updateUserInfo('')
+          updateIsLogin(false)
+          return
+        }
+        if (!isLogin && data.length && !busy) {
+          try {
+            busy = true
+            const content = await getSignContent()
+            console.log('getSignContent', content)
+            const signature = await sign(content.text)
+            console.log('sign result', signature)
+            const res = await login({
+              walletAddr: getAccount(config).address,
+              text: content.text,
+              signature
+            })
+            console.log('login success', res)
+            localStorage.setItem('token', res.token)
+            updateUserInfo({token:res.token,address:getAccount(config).address})
+            updateIsLogin(true)
+            toast.success('login succeed')
+          } catch (err) {
+            console.log('login failed', err)
+            toast.error(err.message)
+            disconnect(config); // 断开连接
+            localStorage.removeItem('token')
+            updateUserInfo('')
+            updateIsLogin(false)
+          } finally {
+            busy = false
+          }
+        }
+      },
+    });
+  },[])
   // 点击外部关闭菜单
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -87,6 +92,7 @@ const WalletButton: React.FC = () => {
     disconnect(); // 断开连接
     setIsMenuOpen(false); // 关闭菜单
     localStorage.removeItem('token')
+    updateUserInfo('')
   };
 
   const toggleMenu = () => {

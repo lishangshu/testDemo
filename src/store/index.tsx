@@ -1,13 +1,19 @@
 
 import { create } from "zustand";
 import { persist } from 'zustand/middleware';
-const useStore = create(
+const useStore:any = create(
     persist(
       (set) => ({
+        isLogin: false,
         userInfo:{},
+        integralInfo:{},
         updateUserInfo:(state:any)=>{
             set({userInfo:state})
-        }
+        },
+        updateIntegralInfo:(state:any)=>{
+            set({integralInfo:state})
+        },
+        updateIsLogin: (flag: any) => set({ isLogin: flag }),
       }),
       {
         name: 'my-store', // 存储在 localStorage 中的键名

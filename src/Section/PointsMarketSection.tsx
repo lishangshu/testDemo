@@ -16,6 +16,9 @@ import Referral from "@/components/Referral";
 import { useTranslation } from "react-i18next";
 import Router from "next/router";
 import { fetchPointsRecordTableData, fetchPointsReferralTableData } from '@/http/api';
+import useStore from '@/store/index';
+import { useApolloClient, gql } from '@apollo/client';
+import { inviteUrl } from '@/configs/baseUrl'
 type PointsMarketSectionProps = {
   type: "pointsMarket" | "referral" | "myRewards" | "rewardCenter";
 };
@@ -24,6 +27,8 @@ const PointsMarketSection: FC<PointsMarketSectionProps> = ({ type }) => {
   const [activeTab, setActiveTab] = useState<"pointsRecord" | "referralDetail">(
     "pointsRecord"
   );
+  const { userInfo,updateIntegralInfo,integralInfo } = useStore();
+  const [shareUrl,setShareUrl] = useState('')
   const { t } = useTranslation("common");
   const goPage = (to: string) => {
     Router.push(to);
@@ -46,29 +51,54 @@ const PointsMarketSection: FC<PointsMarketSectionProps> = ({ type }) => {
   const changePointTab = (type:string)=>{
     console.log(type)
     if(type == 'pointsRecord'){
-      loadPointData()
+      loadPointData({
+        variables: integralInfo.id
+      });
     }
     if(type == 'referralDetail'){
-      loadReferralData()
+      // loadReferralData()
     }
   }
 
+  const client = useApolloClient();
   const [pointsRecordDataSource, setPointsRecordDataSource] = useState([]); // My points->Points Record
-  const loadPointData = async () => {
-    const data = await fetchPointsRecordTableData();
-    setPointsRecordDataSource(data)
+  const loadPointData = async (parms:any) => {
+    await client.query({
+      query: gql`
+      query {
+      pointLogs(input: {
+        userId: ${parms.variables},
+        pageSize: 10,
+        pageNum: 0
+      }) {
+        id
+        userId
+        pointChange
+        type
+        createdAt
+        updatedAt
+        deletedAt
+      }
+    }
+      `
+    }).then(res=>{
+      setPointsRecordDataSource(res?.data?.pointLogs || [])
+      setreferralDetailDataSource(res?.data?.pointLogs || [])
+    })
+    
   };
 
   const [referralDetailDataSource, setreferralDetailDataSource] = useState([]); // My points->Referral Detail
-  const loadReferralData = async () => {
-    const data = await fetchPointsReferralTableData();
-    setreferralDetailDataSource(data)
-  };
-
+  // const loadReferralData = async () => {
+  //   const data = await fetchPointsReferralTableData();
+  //   setreferralDetailDataSource(data)
+  // };
   useEffect(() => {
-    console.log('9999',type)
+    setShareUrl(inviteUrl+'?ref=' + integralInfo.inviteCode)
     if(type == 'myRewards'){
-      loadPointData();
+      loadPointData({
+        variables: integralInfo.id
+      });
     }
   }, []);
   
@@ -112,7 +142,7 @@ const PointsMarketSection: FC<PointsMarketSectionProps> = ({ type }) => {
             {t("my-points")}
           </h1>
           <div className="flex items-center justify-start gap-[5px]">
-            <span className="text-primary font-600 text-[60px]">50</span>
+            <span className="text-primary font-600 text-[60px]">{integralInfo?.points || 0}</span>
             <Image src="/points.svg" width={25} height={25} alt="points" />
           </div>
         </>
@@ -186,7 +216,7 @@ const PointsMarketSection: FC<PointsMarketSectionProps> = ({ type }) => {
                 className="button-hover"
               />{" "}
             </div>
-            <Referral link="xxx.io/referral?ref=CODE" />
+            <Referral link={shareUrl} />
           </div>
         </div>
       )}

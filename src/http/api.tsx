@@ -1,6 +1,5 @@
 import api from "@/http/axios";
-import { gql, useQuery } from "@apollo/client";
-
+import { gql, useQuery, useApolloClient } from "@apollo/client";
 // My Points->Points Record页面
 export async function fetchPointsRecordTableData() {
   try {
@@ -28,13 +27,11 @@ export async function fetchPointsReferralTableData() {
   }
 }
 
-// 获取个人积分
-export const useGetUserInfo = (parms?: any) => {
-  console.log('oooooooooooooooo')
+export const refetchQuery = (parms?: any) => {
   const GET_USERS = gql`
   query {
   getUser(input:{
-    id: "1"
+     id: ${parms.variables}
   }) {
     user {
       id

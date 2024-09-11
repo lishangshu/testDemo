@@ -4,10 +4,47 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import PointsMarketSection from "@/Section/PointsMarketSection";
 import { useTranslation } from "react-i18next";
+import { useApolloClient, gql } from '@apollo/client';
+import useStore  from '@/store/index';
+import { useEffect } from "react";
 
 const Market: NextPage = () => {
   const { t } = useTranslation("common");
-
+  const client = useApolloClient();
+  const { userInfo,updateIntegralInfo } = useStore();
+  // 获取积分信息
+  const refetchQuery = async (parms:any) => {
+    await client.query({
+      query: gql`
+      query {
+        getUser(input: { 
+          address: "${parms.variables}" 
+        }) {
+          user {
+            id
+            address
+            hashKey
+            points
+            inviteCode
+            createdAt
+            updatedAt
+            deletedAt
+          }
+        }
+      }
+      `
+    }).then(res=>{
+      updateIntegralInfo(res.data.getUser.user)
+    }).catch(error => {
+      updateIntegralInfo({})
+    });
+  };
+  useEffect(() => {
+    if(!userInfo.address)return
+    refetchQuery({
+      variables: "1"
+    })
+  },[])
   return (
     <div>
       <Head>

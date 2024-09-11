@@ -3,10 +3,54 @@ import Referral from "@/components/Referral";
 import Table from "@/components/Table";
 import { levelColumns, levelDataSource } from "@/configs/level";
 import { useTranslation } from "react-i18next";
-
+import useStore from '@/store/index';
+import { useApolloClient, gql } from '@apollo/client';
+import { useEffect,useState } from "react";
+import { inviteUrl } from '@/configs/baseUrl'
 const LevelSection = () => {
+  const { integralInfo } = useStore();
   const { t } = useTranslation("common");
-
+  const client = useApolloClient();
+  const [pointReward, setPointReward] = useState<number>(0);
+  const [directReferrals, setDirectReferrals] = useState<number>(0);
+  const [shareUrl,setShareUrl] = useState('')
+  // pointlog
+  const loadPointData = async (parms:any) => {
+    await client.query({
+      query: gql`
+      query {
+      pointLogs(input: {
+        userId: ${parms.variables},
+        pageSize: 10,
+        pageNum: 0
+      }) {
+        id
+        userId
+        pointChange
+        type
+        createdAt
+        updatedAt
+        deletedAt
+      }
+    }
+      `
+    }).then(res=>{
+      let total = 0
+      res.data.pointLogs.forEach(item=>{
+        console.log('++',item)
+        total += item.pointChange  
+      })
+      setDirectReferrals(res.data.pointLogs.length)
+      setPointReward(total)
+    })
+    
+  };
+  useEffect(() => {
+    setShareUrl(inviteUrl+'?ref=' + integralInfo.inviteCode)
+    loadPointData({
+      variables: integralInfo.id
+    });
+  },[])
   return (
     <section className="bg-bg-primary w-full min-h-screen py-[135px]">
       <h1 className="text-[34px] font-800 text-primary mb-[85px] ml-[105px]">
@@ -19,7 +63,7 @@ const LevelSection = () => {
           <span className="text-[28px] font-400">{t("earn-points")}</span>
         </div>
         <div className="w-[600px]">
-          <Referral link="xxx.io/referral?ref=CODE" />
+          <Referral link={shareUrl } />
         </div>
       </div>
 
@@ -33,14 +77,14 @@ const LevelSection = () => {
             <span className="text-primary text-[16px] font-400">
               {t("point-reward")}
             </span>
-            <span className="text-primary text-[28px] font-600">4500</span>
+            <span className="text-primary text-[28px] font-600">{pointReward}</span>
           </div>
 
           <div className="w-[260px] flex flex-col px-[30px] py-[9px] text-primary rounded-card shadow-tableCard">
             <span className="text-primary text-[16px] font-400">
               {t("direct-referrals")}
             </span>
-            <span className="text-primary text-[28px] font-600">23</span>
+            <span className="text-primary text-[28px] font-600">{directReferrals}</span>
           </div>
         </div>
 
