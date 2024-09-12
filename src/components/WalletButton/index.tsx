@@ -170,7 +170,7 @@ const WalletButton: React.FC = () => {
                   className="px-4 py-2 hover:bg-gray-200 cursor-pointer rounded-bl-xl rounded-br-xl"
                   onClick={handleDisconnect}
                 >
-                  {t("login-out")}
+                  {t("login-out")} 
                 </li>
               </ul>
             </div>
