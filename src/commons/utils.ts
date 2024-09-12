@@ -43,6 +43,7 @@ export function getExpireData(time) {
 	return `${daysRemaining>0?daysRemaining:daysRemaining} days`
 }
 
+// name匹配图片
 export function matchImg(logo:string){
     switch (logo) {
       case "USDT":
@@ -51,7 +52,20 @@ export function matchImg(logo:string){
         return '/solana.png';
       case "AVAX":
         return '/avax.png';
+	  case "USDC":
+        return '/usdc.png';
       default:
         return '';
     }
   };
+
+//   随机字符串
+	export function generateRandomString(num:number){
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < num; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}

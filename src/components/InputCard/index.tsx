@@ -13,7 +13,7 @@ interface InputCardProps {
     rate: number;
     network: string;
 	apy: number;
-	cycle: number;
+	cycle: number|string;
 	maturity: string;
 	onChange: (value: number) => void;
 }

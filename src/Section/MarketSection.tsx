@@ -1,6 +1,7 @@
 import MarketCard from "@/components/MarketCard";
 import { useTranslation } from "react-i18next";
-
+import { productList }  from "@/configs/prodictList";
+import { generateRandomString } from "@/commons/utils"
 const MarketSection = () => {
   const { t } = useTranslation("common");
 
@@ -11,18 +12,21 @@ const MarketSection = () => {
           {t("discover-yield-markets")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+        {productList.map(item => (
           <MarketCard
-            logo="/avax.png"
-            subLogo="/aave.png"
-            coinName="AVAX"
-            apy={23.57}
-            cycle={7}
-            maturity="2024-09-15T07:58:00"
-            tvl="10.5M"
-            network="Ethereum"
-            pid={6}
+            key={generateRandomString(10)}
+            logo={item.abbrLogo}
+            subLogo={item.abbrSubLogo}
+            coinName={item.abbrTitle}
+            apy={item.abbrApy}
+            cycle={item.abbrCycle}
+            maturity={item.maturity}
+            tvl={item.tvl}
+            network={item.network}
+            pid={item.pid}
           />
-          <MarketCard
+        ))}
+          {/* <MarketCard
             logo="/solana.png"
             subLogo="/aave.png"
             coinName="SOL"
@@ -54,7 +58,7 @@ const MarketSection = () => {
             tvl="10.5M"
             network="Ethereum"
             pid={2}
-          />
+          /> */}
         </div>
       </div>
     </section>

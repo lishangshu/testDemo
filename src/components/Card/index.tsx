@@ -6,7 +6,7 @@ interface CardProps {
   abbrLogo: string;
   abbrSubLogo: string;
   abbrTitle: string;
-  abbrApy: string;
+  abbrApy: string|number;
   abbrVersion: string;
   abbrExpireTime:string
 }

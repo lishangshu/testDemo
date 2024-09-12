@@ -3,24 +3,52 @@ export const productList = [
         abbrLogo: "USDT",
         abbrSubLogo: "/aave.png",
         abbrTitle: "USDT",
-        abbrApy: "17.51",
         abbrVersion: "SHAMBHALA",
-        abbrExpireTime:"2024/09/19"
+        abbrExpireTime:"2024/09/20",
+        maturity:"2024-09-20T07:58:00",
+        abbrApy: 23.57,
+        abbrCycle:30,
+        network:"Ethereum",
+        tvl:"10.5M",
+        pid:2
     },
     {
         abbrLogo: "SOL",
         abbrSubLogo: "/aave.png",
         abbrTitle: "SOL",
-        abbrApy: "21.58",
         abbrVersion: "SHAMBHALA",
-         abbrExpireTime:"2024/09/22"
+         abbrExpireTime:"2024/09/15",
+         maturity:"2024-09-15T07:58:00",
+         abbrApy: 23.57,
+         abbrCycle:10,
+         network:"Ethereum",
+         tvl:"10.5M",
+         pid:8,
     },
     {
         abbrLogo: "AVAX",
         abbrSubLogo: "/aave.png",
         abbrTitle: "AVAX",
-        abbrApy: "23.571",
         abbrVersion: "SHAMBHALA",
-         abbrExpireTime:"2024/09/28"
+         abbrExpireTime:"2024/09/15",
+         maturity:"2024-09-15T07:58:00",
+         abbrApy: 23.57,
+         abbrCycle:7,
+         network:"Ethereum",
+         tvl:"10.5M",
+         pid:6,
     },
+    {
+        abbrLogo: "USDC",
+        abbrSubLogo: "/aave.png",
+        abbrTitle: "AVAX",
+        abbrVersion: "SHAMBHALA",
+         abbrExpireTime:"2024/09/20",
+         maturity:"2024-09-20T07:58:00",
+         abbrApy: 23.57,
+         abbrCycle:"30",
+         network:"Ethereum",
+         tvl:"10.5M",
+         pid:2
+    }
 ];

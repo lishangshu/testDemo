@@ -3,7 +3,7 @@ import Image from "next/image";
 import InputCard from "../InputCard";
 import moment from 'moment';
 import { toast } from 'react-toastify'
-
+import { matchImg } from "@/commons/utils"
 import { USDTVAULT_ERC20, USDT_ERC20 } from "@/commons/config";
 import {
   readContract,
@@ -18,7 +18,7 @@ interface MarketCardProps {
   subLogo: string;
   coinName: string;
   apy: number;
-  cycle: number;
+  cycle: number|string;
   maturity: string;
   tvl: string;
   network: string;
@@ -216,7 +216,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
         <div className="flex items-center">
           <div className="relative mr-2">
             <Image
-              src={logo}
+              src={matchImg(logo)}
               alt={coinName}
               width={40}
               height={40}
@@ -257,7 +257,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
         </div>
       </div>
       <InputCard
-        logo={logo}
+        logo={matchImg(logo)}
         coinName={coinName}
         rate={rate || 1}
         network={network}

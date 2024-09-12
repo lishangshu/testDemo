@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Card from "@/components/Card";
 import { productList }  from "@/configs/prodictList";
+import { generateRandomString } from "@/commons/utils"
 const CardSection = () => {
+const newArray = productList.slice(0, 3);
   return (
     <section className="py-12 px-8 bg-gray-100">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-      {productList.map(item => (
+      {newArray.map(item => (
            <Card
-           key={item.abbrApy}
+           key={generateRandomString(10)}
            abbrLogo={item.abbrLogo}
            abbrSubLogo={item.abbrSubLogo}
            abbrTitle={item.abbrTitle}
