@@ -15,6 +15,7 @@ import { login, getSignContent } from '@/http/user'
 import { toast } from 'react-toastify'
 import useStore from '@/store/index';
 import Router from 'next/router';
+import { useTranslation } from "react-i18next";
 
 var busy = false
 
@@ -25,6 +26,7 @@ function sign(message = '') {
 }
 
 const WalletButton: React.FC = () => {
+  const { t } = useTranslation("common");
   const { userInfo,updateUserInfo,isLogin,updateIsLogin } = useStore();
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
@@ -136,7 +138,7 @@ const WalletButton: React.FC = () => {
             <div className="absolute top-full right-0 mt-2 bg-thirdary text-primary rounded-lg shadow-lg z-10">
               <ul className="text-sm">
                 <CopyToClipboard text={address || ""} onCopy={handleCopy}>
-                  <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer">
+                  <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer rounded-tl-xl rounded-tr-xl">
                     <p className="flex items-center justify-center gap-2">
                       <Image
                         src="/user-icon.svg"
@@ -165,10 +167,10 @@ const WalletButton: React.FC = () => {
                   My Portfolio
                 </li>
                 <li
-                  className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                  className="px-4 py-2 hover:bg-gray-200 cursor-pointer rounded-bl-xl rounded-br-xl"
                   onClick={handleDisconnect}
                 >
-                  退出
+                  {t("login-out")}
                 </li>
               </ul>
             </div>

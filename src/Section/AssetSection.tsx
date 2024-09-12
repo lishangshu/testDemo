@@ -223,7 +223,7 @@ const AssetSection = () => {
             </div>
             <div>
               <h1 className="text-coinLg font-500">USDT</h1>
-              <p className="text-coinSm text-secondary font-400">Aave V3</p>
+              <p className="text-coinSm text-secondary font-400">SHAMBHALA</p>
             </div>
           </div>
 
@@ -282,7 +282,7 @@ const AssetSection = () => {
                 <span className="mb-[17px]">{t("protocol")}</span>
                 <div className="flex items-center gap-[2px]">
                   <Image src={"/aave.png"} width={18} height={18} alt="aave" />
-                  <p className="font-500 ml-[5px]">Aave V3</p>
+                  <p className="font-500 ml-[5px]">SHAMBHALA</p>
                 </div>
               </div>
               <div className="flex flex-col items-start ">

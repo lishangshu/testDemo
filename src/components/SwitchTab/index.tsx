@@ -89,7 +89,7 @@ const SwitchTab: FC<SwitchTabProps> = ({ type = "normal" }) => {
                 Markets
               </li>
               <li
-                className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer rounded-tl-xl rounded-tr-xl"
+                className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer"
                 onClick={() => {
                   router.push("/referral");
                   setIsMenuOpen(false);

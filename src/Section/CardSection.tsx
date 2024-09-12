@@ -1,31 +1,42 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Card from "@/components/Card";
-
+import { productList }  from "@/configs/prodictList";
 const CardSection = () => {
   return (
     <section className="py-12 px-8 bg-gray-100">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card
+      {productList.map(item => (
+           <Card
+           key={item.apy}
+           logo={item.logo}
+           subLogo={item.subLogo}
+           title={item.title}
+           apy={item.apy}
+           version={item.version}
+         />
+        ))}
+
+        {/* <Card
           logo="/tether.png"
           subLogo="/aave.png"
           title="USDT"
           apy="17.51"
-          version="Aave V3"
+          version="SHAMBHALA"
         />
         <Card
           logo="/solana.png"
           subLogo="/aave.png"
           title="SOL"
           apy="21.58"
-          version="Aave V3"
+          version="SHAMBHALA"
         />
         <Card
           logo="/avax.png"
           subLogo="/aave.png"
           title="AVAX"
           apy="23.57"
-          version="Aave V3"
-        />
+          version="SHAMBHALA"
+        /> */}
       </div>
     </section>
   );
