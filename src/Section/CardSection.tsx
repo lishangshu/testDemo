@@ -16,6 +16,8 @@ const newArray = productList.slice(0, 3);
            abbrApy={item.abbrApy}
            abbrVersion={item.abbrVersion}
            abbrExpireTime={item.abbrExpireTime}
+           pid={item.pid}
+           contractAddress={item.contractAddress}
          />
         ))}
         {/* <Card

@@ -10,7 +10,8 @@ export const productList = [
         abbrCycle:30,
         network:"Ethereum",
         tvl:"10.5M",
-        pid:2
+        pid:2,
+        contractAddress:'12'
     },
     {
         abbrLogo: "SOL",
@@ -24,6 +25,7 @@ export const productList = [
          network:"Ethereum",
          tvl:"10.5M",
          pid:8,
+         contractAddress:'12'
     },
     {
         abbrLogo: "AVAX",
@@ -37,6 +39,7 @@ export const productList = [
          network:"Ethereum",
          tvl:"10.5M",
          pid:6,
+         contractAddress:'12'
     },
     {
         abbrLogo: "USDC",
@@ -49,6 +52,7 @@ export const productList = [
          abbrCycle:"30",
          network:"Ethereum",
          tvl:"10.5M",
-         pid:2
+         pid:2,
+         contractAddress:'12'
     }
 ];

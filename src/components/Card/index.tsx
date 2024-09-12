@@ -8,10 +8,12 @@ interface CardProps {
   abbrTitle: string;
   abbrApy: string|number;
   abbrVersion: string;
-  abbrExpireTime:string
+  abbrExpireTime:string,
+  pid:number,
+  contractAddress:string
 }
 
-const Card: FC<CardProps> = ({ abbrLogo, abbrSubLogo, abbrTitle, abbrApy, abbrVersion,abbrExpireTime }) => {
+const Card: FC<CardProps> = ({ abbrLogo, abbrSubLogo, abbrTitle, abbrApy, abbrVersion,abbrExpireTime,contractAddress,pid }) => {
   return (
     <div className="bg-white text-black p-4 rounded-lg shadow-lg border border-gray-300 w-400">
       <div className="flex items-center justify-between mb-4">
@@ -49,7 +51,7 @@ const Card: FC<CardProps> = ({ abbrLogo, abbrSubLogo, abbrTitle, abbrApy, abbrVe
       </div>
 
       <div className="flex justify-center">
-        <Link href={{pathname:'/asset',query:{abbrLogo,abbrTitle, abbrApy, abbrVersion,abbrExpireTime}}}>
+        <Link href={{pathname:'/asset',query:{abbrLogo,abbrTitle, abbrApy, abbrVersion,abbrExpireTime,contractAddress,pid}}}>
           <div className="w-200 h-41 mt-2 bg-button text-primary text-center px-6 py-2 rounded-button shadow-sm cursor-pointer button-hover">
             Invest
           </div>

@@ -38,7 +38,7 @@ const AssetSection = () => {
   const [busy, setBusy] = useState(false);
   const router = useRouter();
   const id = router.query.id; // 获取
-  const { abbrLogo,abbrTitle, abbrApy, abbrVersion,abbrExpireTime } = router.query
+  const { abbrLogo,abbrTitle, abbrApy, abbrVersion,abbrExpireTime,contractAddress,pid } = router.query
 
   function getPoolInfo() {
     return readContract(config, {
