@@ -16,6 +16,8 @@ import {
   getAccount,
 } from "@wagmi/core";
 import { config } from "@/wagmi";
+import { useRouter } from 'next/router';
+import { matchImg } from "@/commons/utils"
 
 const AssetSection = () => {
   const { t } = useTranslation("common");
@@ -34,6 +36,9 @@ const AssetSection = () => {
   const rate = 1;
 
   const [busy, setBusy] = useState(false);
+  const router = useRouter();
+  const id = router.query.id; // 获取
+  const { abbrLogo,abbrTitle, abbrApy, abbrVersion,abbrExpireTime } = router.query
 
   function getPoolInfo() {
     return readContract(config, {
@@ -207,7 +212,7 @@ const AssetSection = () => {
           <div className="flex justify-center items-between space-x-4">
             <div className="relative mr-2">
               <Image
-                src={"/tether.png"}
+                src={matchImg(abbrLogo)}
                 alt={"tether"}
                 width={60}
                 height={60}
@@ -222,18 +227,18 @@ const AssetSection = () => {
               />
             </div>
             <div>
-              <h1 className="text-coinLg font-500">USDT</h1>
+              <h1 className="text-coinLg font-500">{abbrTitle}</h1>
               <p className="text-coinSm text-secondary font-400">SHAMBHALA</p>
             </div>
           </div>
 
           <div className="flex flex-col items-center">
             <div className="flex items-baseline justify-between font-600 gap-2">
-              <span className="text-[42px] flex justify-end">9.47%</span>
+              <span className="text-[42px] flex justify-end">{abbrApy}%</span>
               <span className="text-coinSm">APY</span>
             </div>
             <div className="bg-manturity text-primary px-[9px] py-[5px] rounded-[2px] text-coinSm">
-              Maturity: 24/09/10
+              Maturity: {abbrExpireTime}
             </div>
           </div>
         </div>

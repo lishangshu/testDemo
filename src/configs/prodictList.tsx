@@ -1,23 +1,26 @@
 export const productList = [
     {
-        logo: "/tether.png",
-        subLogo: "/aave.png",
-        title: "USDT",
-        apy: "17.51",
-        version: "SHAMBHALA"
+        abbrLogo: "USDT",
+        abbrSubLogo: "/aave.png",
+        abbrTitle: "USDT",
+        abbrApy: "17.51",
+        abbrVersion: "SHAMBHALA",
+        abbrExpireTime:"2024/09/19"
     },
     {
-        logo: "/solana.png",
-        subLogo: "/aave.png",
-        title: "SOL",
-        apy: "21.58",
-        version: "SHAMBHALA"
+        abbrLogo: "SOL",
+        abbrSubLogo: "/aave.png",
+        abbrTitle: "SOL",
+        abbrApy: "21.58",
+        abbrVersion: "SHAMBHALA",
+         abbrExpireTime:"2024/09/22"
     },
     {
-        logo: "/avax.png",
-        subLogo: "/aave.png",
-        title: "AVAX",
-        apy: "23.571",
-        version: "SHAMBHALA"
+        abbrLogo: "AVAX",
+        abbrSubLogo: "/aave.png",
+        abbrTitle: "AVAX",
+        abbrApy: "23.571",
+        abbrVersion: "SHAMBHALA",
+         abbrExpireTime:"2024/09/28"
     },
 ];

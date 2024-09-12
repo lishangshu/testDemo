@@ -7,15 +7,15 @@ const CardSection = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
       {productList.map(item => (
            <Card
-           key={item.apy}
-           logo={item.logo}
-           subLogo={item.subLogo}
-           title={item.title}
-           apy={item.apy}
-           version={item.version}
+           key={item.abbrApy}
+           abbrLogo={item.abbrLogo}
+           abbrSubLogo={item.abbrSubLogo}
+           abbrTitle={item.abbrTitle}
+           abbrApy={item.abbrApy}
+           abbrVersion={item.abbrVersion}
+           abbrExpireTime={item.abbrExpireTime}
          />
         ))}
-
         {/* <Card
           logo="/tether.png"
           subLogo="/aave.png"

@@ -42,3 +42,16 @@ export function getExpireData(time) {
 
 	return `${daysRemaining>0?daysRemaining:daysRemaining} days`
 }
+
+export function matchImg(logo:string){
+    switch (logo) {
+      case "USDT":
+        return '/tether.png';
+      case "SOL":
+        return '/solana.png';
+      case "AVAX":
+        return '/avax.png';
+      default:
+        return '';
+    }
+  };
