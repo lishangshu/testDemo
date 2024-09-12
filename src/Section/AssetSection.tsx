@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import Image from "next/image";
 import Limit from "@/components/Limit";
 import InputBalance from "@/components/InputBalance";
@@ -19,31 +19,37 @@ import { config } from "@/wagmi";
 import { useRouter } from 'next/router';
 import { matchImg } from "@/commons/utils"
 
-const AssetSection = () => {
+interface AssetSectionProps {
+  pid: number;
+  apy: number;
+  maturity: string;
+  cycle: number;
+  contractAddress: string
+}
+
+const AssetSection: FC<AssetSectionProps> =  ({pid, apy, maturity, cycle, contractAddress}) => {
+  console.log('AssetSection', pid, apy, maturity, cycle, contractAddress)
   const { t } = useTranslation("common");
   const [selectedTab, setSelectedTab] = useState<"info" | "apy">("info");
   const [selectedRedeem, setSelectedRedeem] = useState<"invite" | "redeem">(
     "invite"
   );
   const [inputValue, setInputValue] = useState<number>(0.0);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [step, setStep] = useState<number>(0);
   const { address } = useAccount();
+  const [busy, setBusy] = useState(false);
   const { data: balance } = useBalance({
     address,
   });
 
   const rate = 1;
-
-  const [busy, setBusy] = useState(false);
   const router = useRouter();
   const id = router.query.id; // 获取
   const { abbrLogo,abbrTitle, abbrApy, abbrVersion,abbrExpireTime } = router.query
-
   function getPoolInfo() {
     return readContract(config, {
       abi: USDTVAULT_ERC20.abi,
-      address: USDTVAULT_ERC20.address,
+      address: contractAddress,
       functionName: "pools",
       args: [pid],
     });
@@ -52,7 +58,7 @@ const AssetSection = () => {
   function getPoolState() {
     return readContract(config, {
       abi: USDTVAULT_ERC20.abi,
-      address: USDTVAULT_ERC20.address,
+      address: contractAddress,
       functionName: "poolState",
       args: [pid],
     });
@@ -75,7 +81,7 @@ const AssetSection = () => {
       abi: USDT_ERC20.abi,
       address: USDT_ERC20.address,
       functionName: "allowance",
-      args: [account.address, USDTVAULT_ERC20.address],
+      args: [account.address, contractAddress],
     });
   }
 
@@ -83,7 +89,7 @@ const AssetSection = () => {
     const account = getAccount(config);
     return writeContract(config, {
       abi: USDTVAULT_ERC20.abi,
-      address: USDTVAULT_ERC20.address,
+      address: contractAddress,
       functionName: "invest",
       args: [pid, amount],
       account: account.address,
@@ -96,7 +102,7 @@ const AssetSection = () => {
       abi: USDT_ERC20.abi,
       address: USDT_ERC20.address,
       functionName: "approve",
-      args: [USDTVAULT_ERC20.address, amount],
+      args: [contractAddress, amount],
       account: account.address,
     });
   }

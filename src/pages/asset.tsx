@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import {useRouter} from 'next/router'
 import Head from "next/head";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -7,7 +8,8 @@ import { useTranslation } from "react-i18next";
 
 const Asset: NextPage = () => {
   const { t } = useTranslation("common");
-
+  const router = useRouter()
+  const {pid, apy, maturity, cycle, contractAddress} = router.query
   return (
     <div>
       <Head>
@@ -19,7 +21,7 @@ const Asset: NextPage = () => {
         <link href="/favicon.ico" rel="icon" />
       </Head>
       <Header logo switchTab type="normal" tabType="normal" />
-      <AssetSection />
+      <AssetSection pid={parseInt(pid)} apy={parseFloat(apy)} maturity={maturity} cycle={parseInt(cycle)} contractAddress={contractAddress} />
       <Footer />
     </div>
   );
