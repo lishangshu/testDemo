@@ -24,6 +24,7 @@ interface MarketCardProps {
   network: string;
   rate?: number;
   pid: number;
+  contractAddress: string;
 }
 
 const MarketCard: React.FC<MarketCardProps> = ({
@@ -36,11 +37,15 @@ const MarketCard: React.FC<MarketCardProps> = ({
   tvl,
   network,
   rate,
-  pid
+  pid,
+  contractAddress
 }) => {
   const [state, setState] = useState(0);
   const [busy, setBusy] = useState(false);
   const [inputAmount, setInputAmount] = useState(0);
+
+  pid = 6
+  contractAddress = '0x54838cFE209CB271C88Ea10cBEc217F6d64E44Eb'
 
   function getPoolInfo() {
     return readContract(config, {
