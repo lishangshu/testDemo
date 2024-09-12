@@ -6,7 +6,8 @@ import { onError } from '@apollo/client/link/error';
 import { setContext } from '@apollo/client/link/context';
 import { toast } from 'react-toastify'
 const httpLink = new HttpLink({
-  uri: 'http://47.115.60.170:8000/query', // 你的 GraphQL API 地址
+  // uri: 'http://47.115.60.170:8000/query', // 你的 GraphQL API 地址
+  uri: 'http://49.51.193.219:8100/query', // 你的 GraphQL API 地址
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {

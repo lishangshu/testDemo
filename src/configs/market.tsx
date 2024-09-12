@@ -61,21 +61,21 @@ export const marketDataSource = [
 //     rewards: "300",
 //   },
 // ];
-
+// Reward Center
 export const rewardCenterDataSource = [
-  {
-    rewards: "100",
-    reward: "Reward 1",
-    details: "Details 1",
-  },
-  {
-    rewards: "200",
-    reward: "Reward 2",
-  },
-  {
-    rewards: "300",
-    reward: "Reward 3",
-  },
+  // {
+  //   rewards: "100",
+  //   reward: "Reward 1",
+  //   details: "Details 1",
+  // },
+  // {
+  //   rewards: "200",
+  //   reward: "Reward 2",
+  // },
+  // {
+  //   rewards: "300",
+  //   reward: "Reward 3",
+  // },
 ];
 
 export const marketColumns = [
