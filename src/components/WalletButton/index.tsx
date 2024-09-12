@@ -14,6 +14,8 @@ import { useRouter } from "next/router"; // 用于页面跳转
 import { login, getSignContent } from '@/http/user'
 import { toast } from 'react-toastify'
 import useStore from '@/store/index';
+import Router from 'next/router';
+
 var busy = false
 
 function sign(message = '') {
@@ -58,7 +60,7 @@ const WalletButton: React.FC = () => {
             localStorage.setItem('token', res.token)
             updateUserInfo({token:res.token,address:getAccount(config).address})
             updateIsLogin(true)
-            toast.success('login succeed')
+            // toast.success('login succeed')
           } catch (err) {
             console.log('login failed', err)
             toast.error(err.message)
@@ -93,6 +95,8 @@ const WalletButton: React.FC = () => {
     setIsMenuOpen(false); // 关闭菜单
     localStorage.removeItem('token')
     updateUserInfo('')
+    Router.push('/');
+    updateIsLogin(false)
   };
 
   const toggleMenu = () => {
