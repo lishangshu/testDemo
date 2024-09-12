@@ -42,7 +42,7 @@ const Market: NextPage = () => {
   useEffect(() => {
     if(!userInfo.address)return
     refetchQuery({
-      variables: "1"
+      variables: userInfo.address
     })
   },[])
   return (

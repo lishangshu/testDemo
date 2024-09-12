@@ -90,9 +90,9 @@ const LevelSection = () => {
 
         <div className="w-[600px]">
           <Limit
-            progress={(45 / 93) * 100}
-            current={"45"}
-            total={"93"}
+            progress={(0 / 0) * 100}
+            current={"0"}
+            total={"0"}
             footer={false}
             title="Level"
           />

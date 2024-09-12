@@ -1,2 +1,2 @@
 
-export const inviteUrl = 'xxx.io/referral'
+export const inviteUrl = 'http://localhost:3000/'
