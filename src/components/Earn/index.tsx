@@ -1,11 +1,13 @@
 import Image from "next/image";
 import React, { FC } from "react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 interface EarnProps {
   col?: boolean;
 }
 
 const Earn: FC<EarnProps> = ({ col }) => {
+  const { t } = useTranslation("common");
   return (
     <section
       className={`h-[638px] bg-bg-primary text-primary flex items-center`}
@@ -16,17 +18,13 @@ const Earn: FC<EarnProps> = ({ col }) => {
         }`}
       >
         <div className={`w-1/2 ${col ? "mr-0 mt-6" : "mr-[72px]"}`}>
-          <h2 className="text-xl font-bold mb-4">Earn</h2>
+          <h2 className="text-xl font-bold mb-4">{t('earn')}</h2>
           <p className="text-desc mt-[21px]">
-            Earn more when you re-stake with ether.fi Stake your ETH or stETH
-            and get eETH - a natively re-staked liquid staking token. Earn
-            staking rewards across popular networks and the DeFi ecosystem.
-            Plus, receive ether.fi loyalty points, EigenLayer points and many
-            more partner rewards with your eETH.
+           {t('home-instrc')}
           </p>
           <Link href="/discover">
             <div className="w-[200px] h-[42px] bg-primary text-thirdary rounded-full mt-[52px] flex items-center justify-center button-hover mx-auto">
-              Earn Now
+            {t('earn')}
             </div>
           </Link>
         </div>

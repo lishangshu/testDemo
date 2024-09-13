@@ -158,13 +158,13 @@ const WalletButton: React.FC = () => {
                   </li>
                 </CopyToClipboard>
                 {isCopied && (
-                  <li className="text-center text-green-500">地址已复制</li>
+                  <li className="text-center text-green-500">{t('copied')}</li>
                 )}
                 <li
                   className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
                   onClick={() => handlePort()}
                 >
-                  My Portfolio
+                  {t('portfolio')}
                 </li>
                 <li
                   className="px-4 py-2 hover:bg-gray-200 cursor-pointer rounded-bl-xl rounded-br-xl"

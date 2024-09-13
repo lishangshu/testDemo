@@ -85,5 +85,12 @@
     "privacy-changes-title": "6. 本ポリシーの変更",
     "privacy-changes-content": "私たちはプライバシーポリシーを変更することがあります。変更が行われた際には通知を行います。",
     "privacy-contact-title": "7. お問い合わせ",
-    "privacy-contact-content": "本プライバシーポリシーに関する質問は、以下の連絡先までお問い合わせください。"
+    "privacy-contact-content": "本プライバシーポリシーに関する質問は、以下の連絡先までお問い合わせください。",
+    "language-en":"英語",
+    "language-jp":"日本語",
+    "language-cn":"中国語",
+    "home-instrc":"Earn more when you re-stake with ether.fi Stake your ETH or stETH and get eETH - a natively re-staked liquid staking token. Earn staking rewards across popular networks and the DeFi ecosystem. Plus, receive ether.fi loyalty points, EigenLayer points and many more partner rewards with your eETH.",
+    "Terms-Conditions":"利用規約",
+    "community":"コミュニティ",
+    "Docs":"ドキュメンテーション"
 }

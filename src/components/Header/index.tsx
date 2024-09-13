@@ -118,7 +118,7 @@ export const Header: FC<HeaderProps> = ({
                     toggleMenu();
                   }}
                 >
-                  English
+                  {t("language-en")}
                 </li>
                 <li
                   className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
@@ -127,7 +127,7 @@ export const Header: FC<HeaderProps> = ({
                     toggleMenu();
                   }}
                 >
-                  日本語
+                  {t("language-jp")}
                 </li>
 
                 <li
@@ -137,7 +137,7 @@ export const Header: FC<HeaderProps> = ({
                     toggleMenu();
                   }}
                 >
-                  中文
+                  {t('language-cn')}
                 </li>
               </ul>
             ) : (
