@@ -389,6 +389,9 @@ const AssetSection = () => {
   }
 
   queryBalance()
+  // purchaseDefi({
+  //   signedTx: 'xxxxxxxxxxxxxxxxxx'
+  // })
 
   return (
     <section className="w-full bg-thirdary flex items-start pt-[86px] px-[109px]">

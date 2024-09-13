@@ -1,5 +1,4 @@
-const build = 'dev'
-// const build = 'prod'
+import build from "@/commons/env"
 import usdtErc20ABI from "@/commons/abis/USDT-ERC20"
 import usdtErc20ABI_test from "@/commons/abis/USDT-ERC20-test"
 const erc20Address_test = "0x447df38820baa030cC92175C384C42869E237c10"
