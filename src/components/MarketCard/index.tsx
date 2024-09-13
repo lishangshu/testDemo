@@ -249,23 +249,23 @@ const MarketCard: React.FC<MarketCardProps> = ({
       const userRes = await getUserInfo(2)
       console.log('userInfo', userInfo)
       const chainId = getChainId(config)
-      await client.query({
-        query: gql`
-      query {
-        purchaseDefi(input: { 
-          id: "${abbrId || ''}",
-          userId: "${userRes.data.getUser.user.id || ''}",
-          signedTx: "${parms.signedTx}",
-          userAddr: "${account.address}",
-          chainCode: "${chainId}",
-          amount: "${inputAmount}"
-        }) {
-          success
-          id
-          amount
+      await client.mutate({
+        mutation: gql`
+          mutation {
+            purchaseDefi(input: { 
+              id: "${abbrId || ''}"
+              userId: "${userRes.data.getUser.user.id || ''}"
+              signedTx: "${parms.signedTx}"
+              userAddr: "${account.address}"
+              chainCode: "${chainId}"
+              amount: "${inputAmount}"
+            }) {
+              success
+              id
+              amount
+            }
         }
-      }
-      `
+        `
       })
       console.log('purchaseDefi success')
     } catch (error) {

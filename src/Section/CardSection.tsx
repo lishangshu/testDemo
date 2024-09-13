@@ -9,6 +9,7 @@ const newArray = productList.slice(0, 3);
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
       {newArray.map(item => (
            <Card
+           abbrId={item.id}
            key={generateRandomString(10)}
            abbrLogo={item.abbrLogo}
            abbrSubLogo={item.abbrSubLogo}

@@ -318,23 +318,23 @@ const AssetSection = () => {
       const userRes = await getUserInfo(2)
       console.log('userInfo', userInfo)
       const chainId = getChainId(config)
-      await client.query({
-        query: gql`
-      query {
-        purchaseDefi(input: { 
-          id: "${abbrId || ''}",
-          userId: "${userRes.data.getUser.user.id || ''}",
-          signedTx: "${parms.signedTx}",
-          userAddr: "${account.address}",
-          chainCode: "${chainId}",
-          amount: "${inputValue}"
-        }) {
-          success
-          id
-          amount
+      await client.mutate({
+        mutation: gql`
+          mutation {
+            purchaseDefi(input: { 
+              id: "${abbrId || ''}"
+              userId: "${userRes.data.getUser.user.id || ''}"
+              signedTx: "${parms.signedTx}"
+              userAddr: "${account.address}"
+              chainCode: "${chainId}"
+              amount: "${inputValue}"
+            }) {
+              success
+              id
+              amount
+            }
         }
-      }
-      `
+        `
       })
       console.log('purchaseDefi success')
     } catch (error) {
@@ -389,9 +389,6 @@ const AssetSection = () => {
   }
 
   queryBalance()
-  // purchaseDefi({
-  //   signedTx: 'xxxxxxxxxxxxxxxxxx'
-  // })
 
   return (
     <section className="w-full bg-thirdary flex items-start pt-[86px] px-[109px]">
