@@ -187,7 +187,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
           console.log('investing resolved.hash is ', hash)
           if (await success(hash)) {
             console.log("Invest succeed");
-            toast.error("Invest succeed")
+            toast.success("Invest succeed")
             purchaseDefi({
               signedTx: hash
             })
@@ -202,7 +202,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
         const hash = await investing(amount);
         if (await success(hash)) {
           console.log("Invest succeed");
-          toast.error("Invest succeed")
+          toast.success("Invest succeed")
           purchaseDefi({
             signedTx: hash
           })
@@ -246,8 +246,8 @@ const MarketCard: React.FC<MarketCardProps> = ({
   const purchaseDefi = async (parms: any) => {
     try {
       const account = getAccount(config)
-      const userRes = await getUserInfo(2)
-      console.log('userInfo', userInfo)
+      const userRes = await getUserInfo(account.address)
+      console.log('userInfo', userRes)
       const chainId = getChainId(config)
       await client.mutate({
         mutation: gql`

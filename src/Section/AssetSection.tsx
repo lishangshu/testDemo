@@ -315,8 +315,8 @@ const AssetSection = () => {
   const purchaseDefi = async (parms: any) => {
     try {
       const account = getAccount(config)
-      const userRes = await getUserInfo(2)
-      console.log('userInfo', userInfo)
+      const userRes = await getUserInfo(account.address)
+      console.log('userInfo', userRes)
       const chainId = getChainId(config)
       await client.mutate({
         mutation: gql`
