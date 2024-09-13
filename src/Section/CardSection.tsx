@@ -14,6 +14,7 @@ const newArray = productList.slice(0, 3);
            abbrSubLogo={item.abbrSubLogo}
            abbrTitle={item.abbrTitle}
            abbrApy={item.abbrApy}
+           abbrCycle={item.abbrCycle}
            abbrVersion={item.abbrVersion}
            abbrExpireTime={item.abbrExpireTime}
            pid={item.pid}

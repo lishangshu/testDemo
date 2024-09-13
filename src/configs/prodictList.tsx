@@ -10,7 +10,7 @@ export const productList = [
         abbrCycle:6646,
         network:"Ethereum",
         tvl:"10.5M",
-        pid:6,
+        pid:8,
         contractAddress:'0x54838cFE209CB271C88Ea10cBEc217F6d64E44Eb'
     },
     {

@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Limit from "@/components/Limit";
 import InputBalance from "@/components/InputBalance";
 import LineCharts from "@/components/LineCharts";
 import Loading from "@/components/Loading";
 import { useTranslation } from "react-i18next";
-import { useBalance, useAccount } from "wagmi";
 
 import { toast } from 'react-toastify'
 import { USDTVAULT_ERC20, USDT_ERC20 } from "@/commons/config";
@@ -14,10 +13,17 @@ import {
   writeContract,
   getTransactionReceipt,
   getAccount,
+  getChainId
 } from "@wagmi/core";
-import { config } from "@/wagmi";
+import { formatUsdt } from "@/commons/utils"
+import { formatUnits } from "viem"
+// import { config } from "@/wagmi";
+import { config } from '@/providers/AppKitProvider'
 import { useRouter } from 'next/router';
 import { matchImg } from "@/commons/utils"
+import moment from "moment"
+import { useApolloClient, gql } from '@apollo/client';
+import useStore from '@/store/index';
 
 const AssetSection = () => {
   const { t } = useTranslation("common");
@@ -25,25 +31,89 @@ const AssetSection = () => {
   const [selectedRedeem, setSelectedRedeem] = useState<"invite" | "redeem">(
     "invite"
   );
+  const client = useApolloClient();
   const [inputValue, setInputValue] = useState<number>(0.0);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [step, setStep] = useState<number>(0);
-  const { address } = useAccount();
-  const { data: balance } = useBalance({
-    address,
-  });
-
   const rate = 1;
-
   const [busy, setBusy] = useState(false);
   const router = useRouter();
-  const id = router.query.id; // 获取
-  const { abbrLogo,abbrTitle, abbrApy, abbrVersion,abbrExpireTime,contractAddress,pid } = router.query
+  const { abbrId, abbrLogo, abbrTitle, abbrApy, abbrVersion, abbrExpireTime, contractAddress, pid, abbrCycle } = router.query
+  const [balance, setBalance] = useState(BigInt(0))
+  const { userInfo } = useStore();
+  const [receives, setReceives] = useState([])
+
+  const [dailyEarn, setDailyEarn] = useState(0)
+  const [totalEarn, setTotalEarn] = useState(0)
+
+  const d = moment(abbrExpireTime).diff(moment(), 'days')
+  const [points] = useState(parseInt(100 / abbrCycle * d) || 0)
+
+  function inputChange(value) {
+    setInputValue(value)
+    setDailyEarn(formatUsdt((value || 0) * (abbrApy || 0) / 100 / 365, 4))
+    setTotalEarn(formatUsdt((value || 0) * (abbrApy || 30) * (abbrApy || 0) / 100 / 365, 4))
+  }
+
+  function changeTab(tab: "invite" | "redeem") {
+    if (busy) {
+      return
+    }
+    setSelectedRedeem(tab)
+    setStep(0)
+    if (tab == "redeem") {
+      getYourReceive()
+    }
+  }
+
+  function getYourReceive() {
+    const account = getAccount(config)
+    return readContract(config, {
+      abi: USDTVAULT_ERC20.abi,
+      address: contractAddress,
+      functionName: 'canHarvest',
+      args: [pid, account.address]
+    }).then(async res => {
+      console.log('call canHarvest', res)
+      if (res.length == 2) {
+        const addrs = res[0]
+        const values = res[1]
+        const list = []
+        for (var i = 0; i < values.length; i++) {
+          const v = values[i]
+          const addr = addrs[i]
+          const [decimals, symbol] = await Promise.all([getDecimals(addr), getSymbol(addr)])
+          console.log('decimals', decimals, 'symbol', symbol)
+          list.push(`${formatUsdt(formatUnits(v, Number(decimals)), 4)} ${symbol}`)
+        }
+        setReceives(list)
+      }
+    }).catch(err => {
+      toast.error(err.message)
+    }).finally(() => {
+
+    })
+  }
+
+  function getSymbol(address) {
+    return readContract(config, {
+      abi: USDT_ERC20.abi,
+      address: address,
+      functionName: 'symbol'
+    })
+  }
+
+  function getDecimals(address) {
+    return readContract(config, {
+      abi: USDT_ERC20.abi,
+      address: address,
+      functionName: 'decimals'
+    })
+  }
 
   function getPoolInfo() {
     return readContract(config, {
       abi: USDTVAULT_ERC20.abi,
-      address: USDTVAULT_ERC20.address,
+      address: contractAddress,
       functionName: "pools",
       args: [pid],
     });
@@ -52,7 +122,7 @@ const AssetSection = () => {
   function getPoolState() {
     return readContract(config, {
       abi: USDTVAULT_ERC20.abi,
-      address: USDTVAULT_ERC20.address,
+      address: contractAddress,
       functionName: "poolState",
       args: [pid],
     });
@@ -60,12 +130,14 @@ const AssetSection = () => {
 
   function queryBalance() {
     const account = getAccount(config);
-    console.log("account", account);
+    // console.log("account", account);
     return readContract(config, {
       abi: USDT_ERC20.abi,
       address: USDT_ERC20.address,
       functionName: "balanceOf",
-      args: [account.address],
+      args: [account.address]
+    }).then(res => {
+      setBalance(res)
     });
   }
 
@@ -75,7 +147,7 @@ const AssetSection = () => {
       abi: USDT_ERC20.abi,
       address: USDT_ERC20.address,
       functionName: "allowance",
-      args: [account.address, USDTVAULT_ERC20.address],
+      args: [account.address, contractAddress],
     });
   }
 
@@ -83,7 +155,7 @@ const AssetSection = () => {
     const account = getAccount(config);
     return writeContract(config, {
       abi: USDTVAULT_ERC20.abi,
-      address: USDTVAULT_ERC20.address,
+      address: contractAddress,
       functionName: "invest",
       args: [pid, amount],
       account: account.address,
@@ -96,7 +168,7 @@ const AssetSection = () => {
       abi: USDT_ERC20.abi,
       address: USDT_ERC20.address,
       functionName: "approve",
-      args: [USDTVAULT_ERC20.address, amount],
+      args: [contractAddress, amount],
       account: account.address,
     });
   }
@@ -126,7 +198,6 @@ const AssetSection = () => {
   async function handleInvest() {
     console.log("handle invest");
     const account = await getAccount(config);
-    console.log('account', account);
     if (!account.address) {
       console.warn("Please connect wallet first");
       toast.error('Please connect wallet first!')
@@ -178,7 +249,11 @@ const AssetSection = () => {
           console.log('investing resolved.hash is ', hash)
           if (await success(hash)) {
             console.log("Invest succeed");
-            toast.error("Invest succeed")
+            toast.success("Invest succeed")
+            purchaseDefi({
+              signedTx: hash
+            })
+            queryBalance()
           } else {
             console.warn("Invest failed");
             toast.error("Invest failed")
@@ -190,7 +265,11 @@ const AssetSection = () => {
         const hash = await investing(amount);
         if (await success(hash)) {
           console.log("Invest succeed");
-          toast.error("Invest succeed")
+          toast.success("Invest succeed")
+          queryBalance()
+          purchaseDefi({
+            signedTx: hash
+          })
         } else {
           console.warn("Invest failed");
           toast.error("Invest failed")
@@ -204,6 +283,107 @@ const AssetSection = () => {
       setStep(0);
     }
   }
+
+  const getUserInfo = (address) => {
+    return client.query({
+      query: gql`
+      query {
+        getUser(input: { 
+          address: "${address}" 
+        }) {
+          user {
+            id
+            address
+            hashKey
+            points
+            inviteCode
+            createdAt
+            updatedAt
+            deletedAt
+          }
+        }
+      }
+      `
+    })
+  }
+
+  const purchaseDefi = async (parms: any) => {
+    try {
+      const account = getAccount(config)
+      const userRes = await getUserInfo(2)
+      console.log('userInfo', userInfo)
+      const chainId = getChainId(config)
+      await client.query({
+        query: gql`
+      query {
+        purchaseDefi(input: { 
+          id: "${abbrId || ''}",
+          userId: "${userRes.data.getUser.user.id || ''}",
+          signedTx: "${parms.signedTx}",
+          userAddr: "${account.address}",
+          chainCode: "${chainId}",
+          amount: "${inputValue}"
+        }) {
+          success
+          id
+          amount
+        }
+      }
+      `
+      })
+      console.log('purchaseDefi success')
+    } catch (error) {
+      console.error(error)
+    }
+  };
+
+  function redeeming() {
+    const account = getAccount(config);
+    return writeContract(config, {
+      abi: USDTVAULT_ERC20.abi,
+      address: contractAddress,
+      functionName: "redeem",
+      args: [pid],
+      account: account.address,
+    });
+  }
+  
+  async function handleRedeem() {
+    if (busy) {
+    	return
+    }
+    setBusy(true)
+    try {
+      const poolState = await getPoolState();
+      console.log("pool state", poolState);
+      if (poolState != 2) {
+        console.warn("The product has not yet expired");
+        //$toast('The product has not yet expired')
+        //todo
+        toast('The product has not yet expired')
+        return;
+      }
+      // setState(1)
+      const hash = await redeeming();
+      if (await success(hash)) {
+        console.log("Redeem succeed");
+        //toast success todo
+        toast.success('Redeem succeed')
+        queryBalance()
+      } else {
+        console.warn("Redeem failed");
+        //toast failed todo
+        toast.error('Redeem failed')
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error(e.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  queryBalance()
 
   return (
     <section className="w-full bg-thirdary flex items-start pt-[86px] px-[109px]">
@@ -329,14 +509,14 @@ const AssetSection = () => {
       <div className="w-1/3 flex flex-col items-center justify-center">
         <div className="flex items-center mb-[31px] border border-[1px] border-[#E2E2E2] rounded-[50px]">
           <div
-            onClick={() => setSelectedRedeem("invite")}
+            onClick={() => changeTab("invite")}
             className={`m-[2px] px-[66px] py-[13px] text-primary cursor-pointer ${selectedRedeem === "invite" ? "bg-[#f1f1f1] rounded-[50px]" : ""
               }`}
           >
             {t("invite")}
           </div>
           <div
-            onClick={() => setSelectedRedeem("redeem")}
+            onClick={() => changeTab("redeem")}
             className={`m-[2px] px-[66px] py-[13px] text-primary cursor-pointer ${selectedRedeem === "redeem" ? "bg-[#f1f1f1] rounded-[50px]" : ""
               }`}
           >
@@ -346,7 +526,7 @@ const AssetSection = () => {
 
         <div className="w-full bg-thirdary shadow-card rounded-card text-primary px-[28px] py-[33px]">
           <div className="text-[12px] font-500 text-[#929292] flex items-center justify-end mb-[5px]">
-            {t("balance")}: {balance?.formatted} {balance?.symbol}
+            {t("balance")}: {formatUsdt(formatUnits(balance, USDT_ERC20.decimals), 2)} USDT
           </div>
           <InputBalance
             logo={"/usdc.png"}
@@ -354,30 +534,47 @@ const AssetSection = () => {
             rate={rate}
             type="asset"
             maxValue={balance?.decimals || 0}
-            onChange={(value) => {
-              setInputValue(value);
-            }}
+            onChange={inputChange}
           />
 
           <div className="w-full flex flex-col items-center justify-around text-secondary font-500 mt-[14px] mb-[38px]">
-            <div className="w-full flex items-center justify-between">
-              <span className="text-[12px]">Est.daily</span>
-              <span className="text-[14px] text-primary">
-                {(rate * inputValue).toFixed(2)} USDT
-              </span>
-            </div>
-            <div className="w-full flex items-center justify-between">
-              <span className="text-[12px]">Est.receive</span>
-              <span className="text-[14px] text-primary">
-                {(rate * inputValue).toFixed(2)}
-              </span>
-            </div>
-            <div className="w-full flex items-center justify-between">
-              <span className="text-[12px]">Est.Points reward</span>
-              <span className="text-[14px] text-primary">
-                {(rate * inputValue).toFixed(2)}
-              </span>
-            </div>
+            {selectedRedeem == 'invite' ?
+              <>
+                <div className="w-full flex items-center justify-between">
+                  <span className="text-[12px]">Est.daily</span>
+                  <span className="text-[14px] text-primary">
+                    {dailyEarn} USDT
+                  </span>
+                </div>
+                <div className="w-full flex items-center justify-between">
+                  <span className="text-[12px]">Est.receive</span>
+                  <span className="text-[14px] text-primary">
+                    {totalEarn} USDT
+                  </span>
+                </div>
+                <div className="w-full flex items-center justify-between">
+                  <span className="text-[12px]">Est.Points reward</span>
+                  <span className="text-[14px] text-primary">
+                    {points}
+                  </span>
+                </div>
+              </>
+              :
+              <>
+                <div className="w-full flex items-center justify-between">
+                  <span className="text-[12px]">Your receive</span>
+                  <div>
+                    {
+                      receives.map(item => (
+                        <div className="text-[14px] text-primary">
+                          {item}
+                        </div>
+                      ))
+                    }
+                  </div>
+                </div>
+              </>
+            }
 
             {(step === 1 || step === 2) && (
               <>
@@ -398,12 +595,22 @@ const AssetSection = () => {
             )}
           </div>
 
-          <div
-            onClick={() => handleInvest()}
-            className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover capitalize"
-          >
-            {step == 0 ? 'Invest' : step == 1 ? 'Step 1 of 2 : Approve USDC' : step == 2 ? (<Loading text='Approving' type="asset" />) : (<Loading text='Investing' type="asset" />)}
-          </div>
+          {
+            selectedRedeem == 'invite' ?
+              <div
+                onClick={() => handleInvest()}
+                className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover capitalize"
+              >
+                {step == 0 ? 'Invest' : step == 1 ? 'Step 1 of 2 : Approve USDC' : step == 2 ? (<Loading text='Approving' type="asset" />) : (<Loading text='Investing' type="asset" />)}
+              </div>
+              :
+              <div
+                onClick={() => handleRedeem()}
+                className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover capitalize"
+              >
+                {!busy ? 'Redeem' : (<Loading text='Redeeming' type="asset" />)}
+              </div>
+          }
 
           {/* {(step === 1 || step === 2) && (
             <>

@@ -1,11 +1,13 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+//import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { config } from '../../providers/AppKitProvider'
 import { useAccount, useDisconnect } from "wagmi";
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { FaCopy } from "react-icons/fa";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { watchConnections, signMessage } from "@wagmi/core";
-import { config } from "@/wagmi";
+import { useWeb3Modal } from '@web3modal/wagmi/react'
+//import { config } from "@/wagmi";
 import {
   getAccount,
   disconnect
@@ -27,20 +29,24 @@ function sign(message = '') {
 
 const WalletButton: React.FC = () => {
   const { t } = useTranslation("common");
-  const { userInfo,updateUserInfo,isLogin,updateIsLogin } = useStore();
+  const { userInfo, updateUserInfo, isLogin, updateIsLogin } = useStore();
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter(); // 用于跳转
-  console.log('xxxxxxxxxxxxxxxxxxxxxxxxx')
-  useEffect(()=>{
+  const { open, close } = useWeb3Modal()
+
+  function openConnectModal() {
+    open({view: 'Connect'})
+  }
+  useEffect(() => {
     const unwatch = watchConnections(config, {
       async onChange(data) {
         console.log("Connections changed!", data);
         const isLogin = !!localStorage.getItem('token');
-        if (isLogin && !data.length)  {
+        if (isLogin && !data.length) {
           localStorage.removeItem('token')
           updateUserInfo('')
           updateIsLogin(false)
@@ -60,7 +66,7 @@ const WalletButton: React.FC = () => {
             })
             console.log('login success', res)
             localStorage.setItem('token', res.token)
-            updateUserInfo({token:res.token,address:getAccount(config).address})
+            updateUserInfo({ token: res.token, address: getAccount(config).address })
             updateIsLogin(true)
             // toast.success('login succeed')
           } catch (err) {
@@ -76,7 +82,7 @@ const WalletButton: React.FC = () => {
         }
       },
     });
-  },[])
+  }, [])
   // 点击外部关闭菜单
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -170,23 +176,29 @@ const WalletButton: React.FC = () => {
                   className="px-4 py-2 hover:bg-gray-200 cursor-pointer rounded-bl-xl rounded-br-xl"
                   onClick={handleDisconnect}
                 >
-                  {t("login-out")} 
+                  {t("login-out")}
                 </li>
               </ul>
             </div>
           )}
         </div>
       ) : (
-        <ConnectButton.Custom>
-          {({ openConnectModal }) => (
-            <div
-              onClick={openConnectModal}
-              className="bg-white text-black px-4 py-2 rounded-full mr-[20px]"
-            >
-              Connect Wallet
-            </div>
-          )}
-        </ConnectButton.Custom>
+        // <ConnectButton.Custom>
+        //   {({ openConnectModal }) => (
+        //     <div
+        //       onClick={openConnectModal}
+        //       className="bg-white text-black px-4 py-2 rounded-full mr-[20px]"
+        //     >
+        //       Connect Wallet
+        //     </div>
+        //   )}
+        // </ConnectButton.Custom>
+        <div
+          onClick={openConnectModal}
+          className="bg-white text-black px-4 py-2 rounded-full mr-[20px]"
+        >
+          Connect Wallet
+        </div>
       )}
     </div>
   );

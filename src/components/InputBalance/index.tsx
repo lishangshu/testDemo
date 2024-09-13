@@ -47,7 +47,7 @@ const InputBalance: FC<InputBalanceProps> = ({
       <div className="flex flex-col items-start ml-[29px]">
         {/* 输入框 */}
         <input
-          type="text"
+          type="number"
           value={inputValue}
           onChange={handleInputChange}
           className="text-coinLg bg-transparent border-none outline-none w-full"
