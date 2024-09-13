@@ -45,7 +45,7 @@ const WalletButton: React.FC = () => {
     const unwatch = watchConnections(config, {
       async onChange(data) {
         console.log("Connections changed!", data);
-        const isLogin = !!localStorage.getItem('token');
+        var isLogin = !!localStorage.getItem('token');
         if (isLogin && !data.length) {
           localStorage.removeItem('token')
           updateUserInfo('')
@@ -68,9 +68,13 @@ const WalletButton: React.FC = () => {
             localStorage.setItem('token', res.token)
             updateUserInfo({ token: res.token, address: getAccount(config).address })
             updateIsLogin(true)
+            isLogin = true
             // toast.success('login succeed')
           } catch (err) {
-            console.log('login failed', err)
+            console.error('login failed', err)
+            if (isLogin) {
+              return
+            }
             toast.error(err.message)
             disconnect(config); // 断开连接
             localStorage.removeItem('token')

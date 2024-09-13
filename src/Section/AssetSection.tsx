@@ -37,7 +37,7 @@ const AssetSection = () => {
   const rate = 1;
   const [busy, setBusy] = useState(false);
   const router = useRouter();
-  const { abbrId, abbrLogo, abbrTitle, abbrApy, abbrVersion, abbrExpireTime, contractAddress, pid, abbrCycle } = router.query
+  const { abbrId, abbrLogo, abbrTitle, abbrApy, abbrVersion, abbrExpireTime, contractAddress, pid, abbrCycle, fixedDuration } = router.query
   const [balance, setBalance] = useState(BigInt(0))
   const { userInfo } = useStore();
   const [receives, setReceives] = useState([])
@@ -50,8 +50,23 @@ const AssetSection = () => {
 
   function inputChange(value) {
     setInputValue(value)
-    setDailyEarn(formatUsdt((value || 0) * (abbrApy || 0) / 100 / 365, 4))
-    setTotalEarn(formatUsdt((value || 0) * (abbrApy || 30) * (abbrApy || 0) / 100 / 365, 4))
+    console.log('input change', value, abbrApy)
+
+    var daily = 0
+		if (fixedDuration == 0) {
+			daily = (value || 0) * (abbrApy || 0) / (365 * 1000000)
+		} else {
+			daily = (value || 0) * 6646 * (abbrApy || 0) / (abbrCycle * 1000000)
+		}
+    setDailyEarn(formatUsdt(daily, 4))
+
+    var total = 0
+    if (fixedDuration == 0) {
+			total = (value || 0) * (abbrCycle || 0) * (abbrApy || 0) / (365 * 6646 * 1000000) + (value || 0)
+		} else {
+			total = (value || 0) * (abbrApy || 0) / 1000000 + (value || 0)
+		}
+    setTotalEarn(formatUsdt(total, 4))
   }
 
   function changeTab(tab: "invite" | "redeem") {

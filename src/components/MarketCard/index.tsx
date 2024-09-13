@@ -337,6 +337,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
         apy={apy}
         cycle={cycle}
         maturity={maturity}
+        fixedDuration={fixedDuration}
         onChange={(value) => setInputAmount(value)}
       />
       <div onClick={handleInvest} className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover">

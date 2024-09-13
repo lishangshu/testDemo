@@ -54,7 +54,7 @@ const Card: FC<CardProps> = ({ abbrId, abbrLogo, abbrSubLogo, abbrTitle, abbrApy
       </div>
 
       <div className="flex justify-center">
-        <Link href={{pathname:'/asset',query:{abbrId, abbrLogo,abbrTitle, abbrApy, abbrCycle, abbrVersion,abbrExpireTime,contractAddress,pid}}}>
+        <Link href={{pathname:'/asset',query:{abbrId, abbrLogo,abbrTitle, abbrApy, abbrCycle, abbrVersion,abbrExpireTime,contractAddress,pid,fixedDuration}}}>
           <div className="w-200 h-41 mt-2 bg-button text-primary text-center px-6 py-2 rounded-button shadow-sm cursor-pointer button-hover">
             Invest
           </div>
