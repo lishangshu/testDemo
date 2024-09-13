@@ -3,7 +3,7 @@ import Table from "@/components/Table";
 import { Column, RowObject } from "@/components/Table/types";
 import {
   marketColumns,
-  marketDataSource,
+  // marketDataSource,
   pointsRecordColumns,
   pointsRecordDataSource,
   referralDetailColumns,
@@ -84,17 +84,18 @@ const PointsMarketSection: FC<PointsMarketSectionProps> = ({ type }) => {
     }).then(res=>{
       setPointsRecordDataSource(res?.data?.pointLogs || [])
       setreferralDetailDataSource(res?.data?.pointLogs || [])
+      setMarketDataSource(res?.data?.pointLogs || [])
     })
     
   };
-
   const [referralDetailDataSource, setreferralDetailDataSource] = useState([]); // My points->Referral Detail
+  const [marketDataSource, setMarketDataSource] = useState([]); // My points->Referral Detail
   // const loadReferralData = async () => {
   //   const data = await fetchPointsReferralTableData();
   //   setreferralDetailDataSource(data)
   // };
   useEffect(() => {
-    setShareUrl(inviteUrl+'?ref=' + integralInfo.inviteCode)
+    setShareUrl(inviteUrl+'?inviteCode=' + integralInfo.inviteCode)
     if(type == 'myRewards'){
       loadPointData({
         variables: integralInfo.id

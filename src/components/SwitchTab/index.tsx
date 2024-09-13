@@ -1,11 +1,13 @@
 import React, { FC, useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter,Router } from "next/router"; // 用于页面跳转
+import { useTranslation } from "react-i18next";
 interface SwitchTabProps {
   type?: "home" | "normal";
 }
 
 const SwitchTab: FC<SwitchTabProps> = ({ type = "normal" }) => {
+  const { t } = useTranslation("common");
   const [activeTab, setActiveTab] = useState("market");
   const [isMenuOpen, setIsMenuOpen] = useState(false); // 控制菜单的状态
   const menuRef = useRef<HTMLDivElement>(null); // 用于点击外部关闭菜单的引用
@@ -46,11 +48,11 @@ const SwitchTab: FC<SwitchTabProps> = ({ type = "normal" }) => {
     >
       <div
         onClick={() => goMasrket("market")}
-        className={`py-3 px-4 rounded-[6px] cursor-pointer ${
+        className={`whitespace-nowrap py-3 w-full rounded-[6px] cursor-pointer text-center ${
           activeTab === "market" ? "bg-activeTab text-primary" : "text-white"
         }`}
       >
-        Market
+        {t('market')}
       </div>
 
       <div
@@ -58,18 +60,18 @@ const SwitchTab: FC<SwitchTabProps> = ({ type = "normal" }) => {
           goMasrket("pointMarkets");
           toggleMenu()
         }}
-        className={`whitespace-nowrap w-full py-3 px-4 rounded-[6px] cursor-pointer text-center ${
+        className={`whitespace-nowrap w-full py-3 rounded-[6px] cursor-pointer text-center ${
           activeTab === "pointMarkets"
             ? "bg-activeTab text-primary"
             : "text-activeTab"
         }`}
       >
-        Point Markets
+        {t('points')}
       </div>
 
       {/* 点击图标触发菜单 */}
       {isMenuOpen && (
-        <div className="relative ml-[10px] mt-[28px]" ref={menuRef}>
+        <div className="relative mt-[28px]" ref={menuRef}>
           <div className="absolute top-full right-0 mt-2 bg-thirdary text-primary text-desc rounded-lg shadow-lg z-10 w-[200px]">
             <ul className="text-sm">
             <li
@@ -86,7 +88,7 @@ const SwitchTab: FC<SwitchTabProps> = ({ type = "normal" }) => {
                   height={16}
                   className="mr-2"
                 />
-                Markets
+                {t('market')}
               </li>
               <li
                 className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer"
@@ -102,7 +104,7 @@ const SwitchTab: FC<SwitchTabProps> = ({ type = "normal" }) => {
                   height={16}
                   className="mr-2"
                 />
-                Referral
+                {t('referral')}
               </li>
               <li
                 className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer"
@@ -118,7 +120,7 @@ const SwitchTab: FC<SwitchTabProps> = ({ type = "normal" }) => {
                   height={16}
                   className="mr-2"
                 />
-                Reward Center
+                {t('reward-center')}
               </li>
               <li
                 className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer rounded-bl-xl rounded-br-xl"
@@ -134,7 +136,7 @@ const SwitchTab: FC<SwitchTabProps> = ({ type = "normal" }) => {
                   height={16}
                   className="mr-2"
                 />
-                My Points
+                 {t('my-points')}
               </li>
             </ul>
           </div>

@@ -46,7 +46,7 @@ const LevelSection = () => {
     
   };
   useEffect(() => {
-    setShareUrl(inviteUrl+'?ref=' + integralInfo.inviteCode)
+    setShareUrl(inviteUrl+'?inviteCode=' + integralInfo.inviteCode)
     loadPointData({
       variables: integralInfo.id
     });
