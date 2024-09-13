@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Card from "@/components/Card";
-import { productList }  from "@/configs/prodictList";
 import { generateRandomString } from "@/commons/utils"
+import useStore from '@/store/index';
 const CardSection = () => {
-const newArray = productList.slice(0, 3);
+  const { productArray,updateProductArray } = useStore();
+const newArray = productArray.slice(0, 3);
   return (
     <section className="py-12 px-8 bg-gray-100">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -20,6 +21,7 @@ const newArray = productList.slice(0, 3);
            abbrExpireTime={item.abbrExpireTime}
            pid={item.pid}
            contractAddress={item.contractAddress}
+           fixedDuration={item.fixedDuration}
          />
         ))}
         {/* <Card

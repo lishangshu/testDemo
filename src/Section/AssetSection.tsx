@@ -419,7 +419,7 @@ const AssetSection = () => {
 
           <div className="flex flex-col items-center">
             <div className="flex items-baseline justify-between font-600 gap-2">
-              <span className="text-[42px] flex justify-end">{abbrApy}%</span>
+              <span className="text-[42px] flex justify-end">{((Number(abbrApy))/1000000)*100}%</span>
               <span className="text-coinSm">APY</span>
             </div>
             <div className="bg-manturity text-primary px-[9px] py-[5px] rounded-[2px] text-coinSm">

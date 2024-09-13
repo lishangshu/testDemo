@@ -1,8 +1,9 @@
 import MarketCard from "@/components/MarketCard";
 import { useTranslation } from "react-i18next";
-import { productList }  from "@/configs/prodictList";
 import { generateRandomString } from "@/commons/utils"
+import useStore from '@/store/index';
 const MarketSection = () => {
+  const { productArray,updateProductArray } = useStore();
   const { t } = useTranslation("common");
 
   return (
@@ -12,7 +13,7 @@ const MarketSection = () => {
           {t("discover-yield-markets")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-        {productList.map(item => (
+        {productArray.map(item => (
           <MarketCard
             abbrId={item.id}
             key={generateRandomString(10)}
@@ -26,6 +27,8 @@ const MarketSection = () => {
             network={item.network}
             pid={item.pid}
             contractAddress={item.contractAddress}
+            fixedDuration={item.fixedDuration}
+            startBlock={item.startBlock}
           />
         ))}
           {/* <MarketCard

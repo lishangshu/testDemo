@@ -1,4 +1,4 @@
-export function formatUsdt(v, decimals = 2) {
+export function formatUsdt(v:any, decimals = 2) {
 	if (typeof v != 'string') {
 		v = new String(v)
 	}
@@ -13,7 +13,7 @@ export function formatUsdt(v, decimals = 2) {
 	return v
 }
 
-export function formatTime(timestamp) {
+export function formatTime(timestamp:any) {
 	const date = new Date(timestamp);
 	const year = date.getFullYear();
 	const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -24,7 +24,7 @@ export function formatTime(timestamp) {
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-export function getExpireData(time) {
+export function getExpireData(time:any) {
 	const targetDate = new Date(time);
 
 	// 获取当前日期
@@ -60,7 +60,7 @@ export function matchImg(logo:string){
   };
 
 //   随机字符串
-	export function generateRandomString(num:number){
+export function generateRandomString(num:number){
     var result = '';
     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
@@ -68,4 +68,20 @@ export function matchImg(logo:string){
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
+}
+
+export function handleShowDay (startBlock,blockNumber,cycle) {
+	console.log(startBlock,blockNumber,cycle)
+	let str = ''
+	if(Number(startBlock)<Number(blockNumber)){
+		str = Math.floor(((cycle - (Number(blockNumber) - Number(startBlock)))/6646))
+		if(str>0){
+			 str = `${str}${"days"}`
+		}else{
+			str = ''
+		}
+	}else{
+		str = 'Not started yet'
+	}
+	return str
 }

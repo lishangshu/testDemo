@@ -4,14 +4,15 @@ import Loading from "@/components/Loading";
 import InputCard from "../InputCard";
 import moment from 'moment';
 import { toast } from 'react-toastify'
-import { matchImg } from "@/commons/utils"
+import { matchImg,handleShowDay } from "@/commons/utils"
 import { USDTVAULT_ERC20, USDT_ERC20 } from "@/commons/config";
 import {
   readContract,
   writeContract,
   getTransactionReceipt,
   getAccount,
-  getChainId
+  getChainId,
+  getBlockNumber
 } from "@wagmi/core";
 // import { config } from "@/wagmi";
 import {config} from "@/providers/AppKitProvider"
@@ -31,6 +32,8 @@ interface MarketCardProps {
   rate?: number;
   pid: number;
   contractAddress: string;
+  fixedDuration:number;
+  startBlock:number
 }
 
 const MarketCard: React.FC<MarketCardProps> = ({
@@ -45,7 +48,9 @@ const MarketCard: React.FC<MarketCardProps> = ({
   network,
   rate,
   pid,
-  contractAddress
+  contractAddress,
+  fixedDuration,
+  startBlock
 }) => {
   const [state, setState] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -273,11 +278,8 @@ const MarketCard: React.FC<MarketCardProps> = ({
     }
   };
 
-  // getPoolInfo().then(res => {
-  //   console.log('pool info', res)
-  // }).catch(err => {
-  //   console.error(err)
-  // })
+  const [blockNumber, setblockNumber] = useState(0);
+	 getBlockNumber(config).then(res=>setblockNumber(res))
 
   return (
     <div className="w-[500px] h-[473px]">
@@ -301,7 +303,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
             />
           </div>
           <div className="ml-4 flex items-center gap-2">
-            <h3 className="text-coinXl">{apy}</h3>
+            <h3 className="text-coinXl">{((Number(apy))/1000000)*100}</h3>
             <div>
               <p>%</p>
               <p className="text-primary text-coinSm">APY</p>
@@ -323,7 +325,8 @@ const MarketCard: React.FC<MarketCardProps> = ({
             <Image src={"/eth.svg"} width={16} height={16} alt="eth" />
             <p className="text-primary text-desc font-500">{network}</p>
           </div>
-          <p className="text-desc text-secondary">Date: {moment(maturity).format('ll')}</p>
+          {/* <p className="text-desc text-secondary" v-if={fixedDuration == 0}>Date: {handleShowDay(startBlock,blockNumber,cycle)}</p> */}
+          <p className="text-desc text-secondary">Date: {moment(maturity).format('ll') }</p>
         </div>
       </div>
       <InputCard

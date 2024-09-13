@@ -12,10 +12,11 @@ interface CardProps {
   abbrVersion: string;
   abbrExpireTime:string,
   pid:number,
-  contractAddress:string
+  contractAddress:string,
+  fixedDuration:number
 }
 
-const Card: FC<CardProps> = ({ abbrId, abbrLogo, abbrSubLogo, abbrTitle, abbrApy, abbrCycle, abbrVersion,abbrExpireTime,contractAddress,pid }) => {
+const Card: FC<CardProps> = ({ abbrId, abbrLogo, abbrSubLogo, abbrTitle, abbrApy, abbrCycle, abbrVersion,abbrExpireTime,contractAddress,pid,fixedDuration }) => {
   return (
     <div className="bg-white text-black p-4 rounded-lg shadow-lg border border-gray-300 w-400">
       <div className="flex items-center justify-between mb-4">
@@ -44,7 +45,7 @@ const Card: FC<CardProps> = ({ abbrId, abbrLogo, abbrSubLogo, abbrTitle, abbrApy
         </div>
 
         <div className="text-right flex flex-row items-center">
-          <span className="text-coinXl font-600">{abbrApy}</span>
+          <span className="text-coinXl font-600">{((Number(abbrApy))/1000000)*100}</span>
           <div className="flex flex-col items-center justify-start ml-[2px]">
             <span className="text-coinSm text-primary">%</span>
             <p className="text-coinSm text-primary">APY</p>

@@ -7,12 +7,16 @@ const useStore:any = create(
         isLogin: false,
         userInfo:{},
         integralInfo:{},
+        productArray:[],
         updateUserInfo:(state:any)=>{
             set({userInfo:state})
         },
         updateIntegralInfo:(state:any)=>{
             set({integralInfo:state})
         },
+        updateProductArray:(state:any)=>{
+          set({productArray:state})
+      },
         updateIsLogin: (flag: any) => set({ isLogin: flag }),
       }),
       {
