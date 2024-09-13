@@ -98,7 +98,7 @@ const PointsMarketSection: FC<PointsMarketSectionProps> = ({ type }) => {
   // };
   useEffect(() => {
     setShareUrl(inviteUrl+'?inviteCode=' + integralInfo.inviteCode)
-    if(type == 'myRewards' || type == 'pointsMarket'){
+    if((type == 'myRewards' || type == 'pointsMarket') && integralInfo.id){
       loadPointData({
         variables: integralInfo.id
       });
