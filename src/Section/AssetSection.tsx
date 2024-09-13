@@ -315,26 +315,26 @@ const AssetSection = () => {
   const purchaseDefi = async (parms: any) => {
     try {
       const account = getAccount(config)
-      const userRes = await getUserInfo(2)
-      console.log('userInfo', userInfo)
+      const userRes = await getUserInfo(account.address)
+      console.log('userInfo', userRes)
       const chainId = getChainId(config)
-      await client.query({
-        query: gql`
-      query {
-        purchaseDefi(input: { 
-          id: "${abbrId || ''}",
-          userId: "${userRes.data.getUser.user.id || ''}",
-          signedTx: "${parms.signedTx}",
-          userAddr: "${account.address}",
-          chainCode: "${chainId}",
-          amount: "${inputValue}"
-        }) {
-          success
-          id
-          amount
+      await client.mutate({
+        mutation: gql`
+          mutation {
+            purchaseDefi(input: { 
+              id: "${abbrId || ''}"
+              userId: "${userRes.data.getUser.user.id || ''}"
+              signedTx: "${parms.signedTx}"
+              userAddr: "${account.address}"
+              chainCode: "${chainId}"
+              amount: "${inputValue}"
+            }) {
+              success
+              id
+              amount
+            }
         }
-      }
-      `
+        `
       })
       console.log('purchaseDefi success')
     } catch (error) {
