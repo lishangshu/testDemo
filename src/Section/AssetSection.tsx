@@ -534,8 +534,8 @@ const AssetSection = () => {
             {t("balance")}: {formatUsdt(formatUnits(balance, USDT_ERC20.decimals), 2)} USDT
           </div>
           <InputBalance
-            logo={"/usdc.png"}
-            coinName={"USDC"}
+            logo={"/tether.png"}
+            coinName={"USDT"}
             rate={rate}
             type="asset"
             maxValue={balance?.decimals || 0}

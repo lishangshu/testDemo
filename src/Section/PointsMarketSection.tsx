@@ -3,7 +3,7 @@ import Table from "@/components/Table";
 import { Column, RowObject } from "@/components/Table/types";
 import {
   marketColumns,
-  // marketDataSource,
+  marketDataSource,
   pointsRecordColumns,
   pointsRecordDataSource,
   referralDetailColumns,
@@ -63,12 +63,13 @@ const PointsMarketSection: FC<PointsMarketSectionProps> = ({ type }) => {
   const client = useApolloClient();
   const [pointsRecordDataSource, setPointsRecordDataSource] = useState([]); // My points->Points Record
   const loadPointData = async (parms:any) => {
+    // userId: ${parms.variables},
     await client.query({
       query: gql`
       query {
       pointLogs(input: {
         userId: ${parms.variables},
-        pageSize: 10,
+        pageSize: 100,
         pageNum: 0
       }) {
         id
@@ -82,6 +83,7 @@ const PointsMarketSection: FC<PointsMarketSectionProps> = ({ type }) => {
     }
       `
     }).then(res=>{
+      console.log('--------------',res)
       setPointsRecordDataSource(res?.data?.pointLogs || [])
       setreferralDetailDataSource(res?.data?.pointLogs || [])
       setMarketDataSource(res?.data?.pointLogs || [])
@@ -96,7 +98,7 @@ const PointsMarketSection: FC<PointsMarketSectionProps> = ({ type }) => {
   // };
   useEffect(() => {
     setShareUrl(inviteUrl+'?inviteCode=' + integralInfo.inviteCode)
-    if(type == 'myRewards'){
+    if(type == 'myRewards' || type == 'pointsMarket'){
       loadPointData({
         variables: integralInfo.id
       });
