@@ -537,8 +537,8 @@ const AssetSection = () => {
             {t("balance")}: {formatUsdt(formatUnits(balance, USDT_ERC20.decimals), 2)} USDT
           </div>
           <InputBalance
-            logo={"/usdc.png"}
-            coinName={"USDC"}
+            logo={"/tether.png"}
+            coinName={"USDT"}
             rate={rate}
             type="asset"
             maxValue={balance?.decimals || 0}
@@ -574,7 +574,7 @@ const AssetSection = () => {
                   <div>
                     {
                       receives.map(item => (
-                        <div className="text-[14px] text-primary">
+                        <div className="text-[14px] text-primary" key={item}>
                           {item}
                         </div>
                       ))

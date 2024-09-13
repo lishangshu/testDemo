@@ -91,8 +91,15 @@ export const marketColumns = [
   },
   {
     title: "Activity",
-    dataIndex: "",
-    key: "",
+    dataIndex: "type",
+    key: "type",
+    render: (value: any) => {
+      return (
+        <span className="w-full text-primary flex items-center justify-start">
+          {value == 1?"Refarral":value == 2?"Staking":""}
+        </span>
+      );
+    },
   },
   {
     title: "Details",
@@ -101,7 +108,7 @@ export const marketColumns = [
   },
   {
     title: <span className="flex items-center justify-center">Rewards</span>,
-    dataIndex: "rewards",
+    dataIndex: "pointChange",
     key: "pointChange",
     render: (value: any) => {
       return (
