@@ -1,7 +1,6 @@
 import React, { FC, useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/router";
-
+import Router, { useRouter } from "next/router";
 import Table from "@/components/Table";
 import { dataSource, switchColumns } from "@/configs/portfolio";
 import { Column, RowObject } from "@/components/Table/types";
@@ -95,6 +94,7 @@ const PortfolioSection: FC<PortfolioSectionProps> = ({ type }) => {
           columns={columns as Column<RowObject>[]}
           dataSource={dataSource}
           type={activeTab === "transactions" ? "card" : "normal"}
+          onDetail={data => Router.push('/detail', {})}
         />
       </div>
     </section>

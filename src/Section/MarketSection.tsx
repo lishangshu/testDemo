@@ -14,6 +14,7 @@ const MarketSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
         {productList.map(item => (
           <MarketCard
+            abbrId={item.id}
             key={generateRandomString(10)}
             logo={item.abbrLogo}
             subLogo={item.abbrSubLogo}
@@ -24,6 +25,7 @@ const MarketSection = () => {
             tvl={item.tvl}
             network={item.network}
             pid={item.pid}
+            contractAddress={item.contractAddress}
           />
         ))}
           {/* <MarketCard

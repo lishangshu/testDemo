@@ -131,14 +131,19 @@ const AssetSection = () => {
   function queryBalance() {
     const account = getAccount(config);
     // console.log("account", account);
-    return readContract(config, {
-      abi: USDT_ERC20.abi,
-      address: USDT_ERC20.address,
-      functionName: "balanceOf",
-      args: [account.address]
-    }).then(res => {
-      setBalance(res)
-    });
+    return new Promise((resolve, reject) => {
+      readContract(config, {
+        abi: USDT_ERC20.abi,
+        address: USDT_ERC20.address,
+        functionName: "balanceOf",
+        args: [account.address]
+      }).then(res => {
+        setBalance(res)
+        resolve(res)
+      }).catch(err => {
+        reject(err)
+      })
+    })
   }
 
   function getAllowance() {

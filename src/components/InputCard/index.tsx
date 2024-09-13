@@ -23,7 +23,7 @@ const InputCard: React.FC<InputCardProps> = ({ logo, coinName, rate, network, ap
 	const [totalEarn, setTotalEarn] = useState(0)
 	
 	const d = moment(maturity).diff(moment(), 'days')
-	const [points, setPoints] = useState(parseInt(100 / cycle * d))
+	const [points] = useState(parseInt(100 / cycle * d) || 0)
 	function inputChange(value) {
 		setDailyEarn(formatUsdt((value || 0) * (apy || 0) / 100 / 365, 4))
 		setTotalEarn(formatUsdt((value || 0) * (cycle || 30) * (apy || 0) / 100 / 365, 4))
@@ -42,7 +42,7 @@ const InputCard: React.FC<InputCardProps> = ({ logo, coinName, rate, network, ap
                 </div>
                 <div className='w-full flex items-center justify-between'>
                     <span className='text-[12px]'>Est.receive</span>
-                    <span className='text-[14px] text-primary'>{totalEarn}</span>
+                    <span className='text-[14px] text-primary'>{totalEarn} USDT</span>
                 </div>
                 <div className='w-full flex items-center justify-between'>
                     <span className='text-[12px]'>Est.Points reward</span>
