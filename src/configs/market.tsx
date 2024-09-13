@@ -1,26 +1,26 @@
 import moment from "moment";
 import { RowObject } from "@/components/Table/types";
 
-export const marketDataSource = [
-  {
-    date: Date.now(),
-    activity: "Activity 1",
-    details: "0x73fh387w087e0qbv876653h9vn30",
-    rewards: "100",
-  },
-  {
-    date: Date.now(),
-    activity: "Activity 2",
-    details: "Aave Ethereum USDT Staking",
-    rewards: "200",
-  },
-  {
-    date: Date.now(),
-    activity: "Activity 3",
-    details: "0x73fh387w087e0qbv876653h9vn30",
-    rewards: "300",
-  },
-];
+// export const marketDataSource = [
+//   {
+//     date: Date.now(),
+//     activity: "Activity 12",
+//     details: "0x73fh387w087e0qbv876653h9vn30",
+//     rewards: "100",
+//   },
+//   {
+//     date: Date.now(),
+//     activity: "Activity 2",
+//     details: "Aave Ethereum USDT Staking",
+//     rewards: "200",
+//   },
+//   {
+//     date: Date.now(),
+//     activity: "Activity 3",
+//     details: "0x73fh387w087e0qbv876653h9vn30",
+//     rewards: "300",
+//   },
+// ];
 
 // My-point/points-record 数据源
 // export const pointsRecordDataSource = [
@@ -77,12 +77,12 @@ export const rewardCenterDataSource = [
   //   reward: "Reward 3",
   // },
 ];
-
+// Point Market-> My Points
 export const marketColumns = [
   {
     title: <span className="flex items-center justify-start">Date</span>,
     dataIndex: "date",
-    key: "date",
+    key: "updatedAt",
     render: (value: RowObject["date"]) => (
       <span className="w-full text-primary flex items-center justify-start">
         {moment(value).format("YYYY/MM/DD HH:mm")}
@@ -91,8 +91,8 @@ export const marketColumns = [
   },
   {
     title: "Activity",
-    dataIndex: "activity",
-    key: "activity",
+    dataIndex: "",
+    key: "",
   },
   {
     title: "Details",
@@ -102,7 +102,7 @@ export const marketColumns = [
   {
     title: <span className="flex items-center justify-center">Rewards</span>,
     dataIndex: "rewards",
-    key: "rewards",
+    key: "pointChange",
     render: (value: any) => {
       return (
         <span className="w-full text-primary flex items-center justify-center">
