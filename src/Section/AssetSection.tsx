@@ -566,7 +566,7 @@ const AssetSection = () => {
                   <div>
                     {
                       receives.map(item => (
-                        <div className="text-[14px] text-primary">
+                        <div className="text-[14px] text-primary" key={item}>
                           {item}
                         </div>
                       ))
