@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import Loading from "@/components/Loading";
 import InputCard from "../InputCard";
 import moment from 'moment';
 import { toast } from 'react-toastify'
@@ -10,10 +11,15 @@ import {
   writeContract,
   getTransactionReceipt,
   getAccount,
+  getChainId
 } from "@wagmi/core";
-import { config } from "@/wagmi";
+// import { config } from "@/wagmi";
+import {config} from "@/providers/AppKitProvider"
+import { useApolloClient, gql } from '@apollo/client';
+import useStore from '@/store/index';
 
 interface MarketCardProps {
+  abbrId: string;
   logo: string;
   subLogo: string;
   coinName: string;
@@ -28,6 +34,7 @@ interface MarketCardProps {
 }
 
 const MarketCard: React.FC<MarketCardProps> = ({
+  abbrId,
   logo,
   subLogo,
   coinName,
@@ -43,14 +50,13 @@ const MarketCard: React.FC<MarketCardProps> = ({
   const [state, setState] = useState(0);
   const [busy, setBusy] = useState(false);
   const [inputAmount, setInputAmount] = useState(0);
-
-  pid = 6
-  contractAddress = '0x54838cFE209CB271C88Ea10cBEc217F6d64E44Eb'
+  const { userInfo } = useStore();
+  const client = useApolloClient();
 
   function getPoolInfo() {
     return readContract(config, {
       abi: USDTVAULT_ERC20.abi,
-      address: USDTVAULT_ERC20.address,
+      address: contractAddress,
       functionName: "pools",
       args: [pid],
     });
@@ -59,7 +65,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
   function getPoolState() {
     return readContract(config, {
       abi: USDTVAULT_ERC20.abi,
-      address: USDTVAULT_ERC20.address,
+      address: contractAddress,
       functionName: "poolState",
       args: [pid],
     });
@@ -67,7 +73,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
 
   function queryBalance() {
     const account = getAccount(config);
-    console.log("account", account);
+    // console.log("account", account);
     return readContract(config, {
       abi: USDT_ERC20.abi,
       address: USDT_ERC20.address,
@@ -82,7 +88,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
       abi: USDT_ERC20.abi,
       address: USDT_ERC20.address,
       functionName: "allowance",
-      args: [account.address, USDTVAULT_ERC20.address],
+      args: [account.address, contractAddress],
     });
   }
 
@@ -90,7 +96,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
     const account = getAccount(config);
     return writeContract(config, {
       abi: USDTVAULT_ERC20.abi,
-      address: USDTVAULT_ERC20.address,
+      address: contractAddress,
       functionName: "invest",
       args: [pid, amount],
       account: account.address,
@@ -103,7 +109,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
       abi: USDT_ERC20.abi,
       address: USDT_ERC20.address,
       functionName: "approve",
-      args: [USDTVAULT_ERC20.address, amount],
+      args: [contractAddress, amount],
       account: account.address,
     });
   }
@@ -131,15 +137,15 @@ const MarketCard: React.FC<MarketCardProps> = ({
   }
 
   async function handleInvest() {
+    if (busy) {
+      return;
+    }
     console.log("handle invest");
     const account = await getAccount(config);
-    console.log('account', account);
+    // console.log('account', account);
     if (!account.address) {
       console.warn("Please connect wallet first");
       toast.error('Please connect wallet first!')
-      return;
-    }
-    if (busy) {
       return;
     }
     setBusy(true);
@@ -152,14 +158,14 @@ const MarketCard: React.FC<MarketCardProps> = ({
         toast.error("Product has been ended")
         return;
       }
-      const balance = await queryBalance();
-      console.log("balance", balance);
       if (inputAmount <= 0) {
         console.warn("Asset must bigger than zero");
         toast.error("Asset must bigger than zero")
         setBusy(false);
         return;
       }
+      const balance = await queryBalance();
+      console.log("balance", balance);
       const amount =
         BigInt(inputAmount) * BigInt(Math.pow(10, Number(USDT_ERC20.decimals)));
       if (amount > balance) {
@@ -182,6 +188,9 @@ const MarketCard: React.FC<MarketCardProps> = ({
           if (await success(hash)) {
             console.log("Invest succeed");
             toast.error("Invest succeed")
+            purchaseDefi({
+              signedTx: hash
+            })
           } else {
             console.warn("Invest failed");
             toast.error("Invest failed")
@@ -194,6 +203,9 @@ const MarketCard: React.FC<MarketCardProps> = ({
         if (await success(hash)) {
           console.log("Invest succeed");
           toast.error("Invest succeed")
+          purchaseDefi({
+            signedTx: hash
+          })
         } else {
           console.warn("Invest failed");
           toast.error("Invest failed")
@@ -207,6 +219,59 @@ const MarketCard: React.FC<MarketCardProps> = ({
       setState(0);
     }
   }
+
+  const getUserInfo = (address) => {
+    return client.query({
+      query: gql`
+      query {
+        getUser(input: { 
+          address: "${address}" 
+        }) {
+          user {
+            id
+            address
+            hashKey
+            points
+            inviteCode
+            createdAt
+            updatedAt
+            deletedAt
+          }
+        }
+      }
+      `
+    })
+  }
+
+  const purchaseDefi = async (parms: any) => {
+    try {
+      const account = getAccount(config)
+      const userRes = await getUserInfo(2)
+      console.log('userInfo', userInfo)
+      const chainId = getChainId(config)
+      await client.query({
+        query: gql`
+      query {
+        purchaseDefi(input: { 
+          id: "${abbrId || ''}",
+          userId: "${userRes.data.getUser.user.id || ''}",
+          signedTx: "${parms.signedTx}",
+          userAddr: "${account.address}",
+          chainCode: "${chainId}",
+          amount: "${inputAmount}"
+        }) {
+          success
+          id
+          amount
+        }
+      }
+      `
+      })
+      console.log('purchaseDefi success')
+    } catch (error) {
+      console.error(error)
+    }
+  };
 
   // getPoolInfo().then(res => {
   //   console.log('pool info', res)
@@ -272,7 +337,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
         onChange={(value) => setInputAmount(value)}
       />
       <div onClick={handleInvest} className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover">
-        {state == 0 ? 'Invest' : state == 1 ? 'Approving' : 'Investing'}
+        {state == 0 ? 'Invest' : state == 1 ? (<Loading text='Approving' type="asset" />) : (<Loading text='Investing' type="asset" />)}
       </div>
     </div>
   );
