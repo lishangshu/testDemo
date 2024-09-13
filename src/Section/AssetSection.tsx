@@ -460,8 +460,8 @@ const AssetSection = () => {
               <div className="flex flex-col items-start ">
                 <span className="mb-[17px]">{t("earn")}</span>
                 <div className="flex items-center gap-[2px]">
-                  <Image src={"/usdc.png"} width={18} height={18} alt="eth" />
-                  <p className="font-500">USDC</p>
+                  <Image src={"/tether.png"} width={18} height={18} alt="eth" />
+                  <p className="font-500">USDT</p>
                 </div>
               </div>
               <div className="flex flex-col items-start ">
@@ -606,7 +606,7 @@ const AssetSection = () => {
                 onClick={() => handleInvest()}
                 className="w-full h-[60px] flex items-center justify-center bg-primary text-thirdary text-[16px] font-600 rounded-[20px] button-hover capitalize"
               >
-                {step == 0 ? 'Invest' : step == 1 ? 'Step 1 of 2 : Approve USDC' : step == 2 ? (<Loading text='Approving' type="asset" />) : (<Loading text='Investing' type="asset" />)}
+                {step == 0 ? 'Invest' : step == 1 ? 'Step 1 of 2 : Approve USDT' : step == 2 ? (<Loading text='Approving' type="asset" />) : (<Loading text='Investing' type="asset" />)}
               </div>
               :
               <div
