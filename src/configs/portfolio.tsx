@@ -10,30 +10,30 @@ import {
 } from "@wagmi/core";
 import { config } from "@/wagmi";
 export const dataSource: RowObject[] = [
-  {
-    protocol: { src: "/fluid.svg", alt: "Fluid", label: "Fluid", size: 40 },
-    network: { src: "/eth.svg", alt: "Ethereum", label: "Ethereum", size: 16 },
-    amount: { fusdt: 2.017, usdt: -70.54 },
-    investedProducts: "2",
-    assets: "$7.73",
-    date: Date.now(),
-  },
-  {
-    protocol: { src: "/fluid.svg", alt: "Fluid", label: "Fluid", size: 40 },
-    network: { src: "/eth.svg", alt: "Ethereum", label: "Ethereum", size: 16 },
-    amount: { fusdt: 2.017, usdt: -70.54 },
-    investedProducts: "2",
-    assets: "$7.73",
-    date: Date.now(),
-  },
-  {
-    protocol: { src: "/fluid.svg", alt: "Fluid", label: "Fluid", size: 40 },
-    network: { src: "/eth.svg", alt: "Ethereum", label: "Ethereum", size: 16 },
-    amount: { fusdt: 2.017, usdt: -70.54 },
-    investedProducts: "2",
-    assets: "$7.73",
-    date: Date.now(),
-  },
+  // {
+  //   protocol: { src: "/fluid.svg", alt: "Fluid", label: "Fluid", size: 40 },
+  //   network: { src: "/eth.svg", alt: "Ethereum", label: "Ethereum", size: 16 },
+  //   amount: { fusdt: 2.017, usdt: -70.54 },
+  //   investedProducts: "2",
+  //   assets: "$7.73",
+  //   date: Date.now(),
+  // },
+  // {
+  //   protocol: { src: "/fluid.svg", alt: "Fluid", label: "Fluid", size: 40 },
+  //   network: { src: "/eth.svg", alt: "Ethereum", label: "Ethereum", size: 16 },
+  //   amount: { fusdt: 2.017, usdt: -70.54 },
+  //   investedProducts: "2",
+  //   assets: "$7.73",
+  //   date: Date.now(),
+  // },
+  // {
+  //   protocol: { src: "/fluid.svg", alt: "Fluid", label: "Fluid", size: 40 },
+  //   network: { src: "/eth.svg", alt: "Ethereum", label: "Ethereum", size: 16 },
+  //   amount: { fusdt: 2.017, usdt: -70.54 },
+  //   investedProducts: "2",
+  //   assets: "$7.73",
+  //   date: Date.now(),
+  // },
 ];
 
 export const baseColumns = [
