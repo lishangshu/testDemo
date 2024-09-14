@@ -18,7 +18,7 @@ import {
 import {config} from "@/providers/AppKitProvider"
 import { useApolloClient, gql } from '@apollo/client';
 import useStore from '@/store/index';
-
+import {getContractMsg} from '@/commons/utils'
 interface MarketCardProps {
   abbrId: string;
   logo: string;
@@ -33,6 +33,7 @@ interface MarketCardProps {
   pid: number;
   contractAddress: string;
   fixedDuration:number;
+  depositLimit: string;
   startBlock:number
 }
 
@@ -49,6 +50,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
   rate,
   pid,
   contractAddress,
+  depositLimit,
   fixedDuration,
   startBlock
 }) => {
@@ -57,6 +59,22 @@ const MarketCard: React.FC<MarketCardProps> = ({
   const [inputAmount, setInputAmount] = useState(0);
   const { userInfo } = useStore();
   const client = useApolloClient();
+  const [myInvestings, setMyInvestings] = useState([])
+
+  function getMyInvestings() {
+    const account = getAccount(config)
+    if (!account || !account.address) {
+      return
+    }
+    axios.get((env == 'dev' ? 'https://apitest.upsurge.finance/invest/v1/profile/ids/' : 'https://api.upsurge.finance/invest/v1/profile/ids/') + account.address)
+      .then(response => {
+        console.log('getMyInvestings', response)
+        if (response.data.code == 200) {
+          setMyInvestings(response.data.data.investing)
+        }
+      })
+      .catch(error => console.error(error))
+  }
 
   function getPoolInfo() {
     return readContract(config, {
@@ -153,6 +171,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
       toast.error('Please connect wallet first!')
       return;
     }
+    
     setBusy(true);
     try {
       const poolState = await getPoolState();
@@ -169,10 +188,21 @@ const MarketCard: React.FC<MarketCardProps> = ({
         setBusy(false);
         return;
       }
+      if (fixedDuration == 1) {
+        const investings = myInvestings.filter(item => item.pid == pid && item.address == contractAddress)
+        if (investings.length) {
+          toast.error('Purchase only once')
+          return
+        }
+      }
+      const amount = BigInt(inputAmount * Math.pow(10, USDT_ERC20.decimals));
+      const limit = BigInt(depositLimit)
+      if (amount < limit) {
+        toast.error('Assets must bigger than ' + limit / BigInt(Math.pow(10, USDT_ERC20.decimals)) + ' USDT')
+        return
+      }
       const balance = await queryBalance();
       console.log("balance", balance);
-      const amount =
-        BigInt(inputAmount) * BigInt(Math.pow(10, Number(USDT_ERC20.decimals)));
       if (amount > balance) {
         console.warn("Insufficient balance");
         //$toast('Insufficient balance')
@@ -218,7 +248,7 @@ const MarketCard: React.FC<MarketCardProps> = ({
       }
     } catch (e) {
       console.error(e);
-      toast.error(e.message)
+      toast.error(getContractMsg(e.message, 'Invest'))
     } finally {
       setBusy(false);
       setState(0);

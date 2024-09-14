@@ -76,7 +76,7 @@ const WalletButton: React.FC = () => {
               return
             }
             toast.error(err.message)
-            disconnect(config); // 断开连接
+            //disconnect(config); // 断开连接
             localStorage.removeItem('token')
             updateUserInfo('')
             updateIsLogin(false)

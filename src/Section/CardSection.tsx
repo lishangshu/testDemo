@@ -22,6 +22,7 @@ const newArray = productArray.slice(0, 3);
            pid={item.pid}
            contractAddress={item.contractAddress}
            fixedDuration={item.fixedDuration}
+           depositLimit={item.depositLimit}
          />
         ))}
         {/* <Card

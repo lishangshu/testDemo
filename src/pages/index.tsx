@@ -12,11 +12,12 @@ import { useEffect } from "react";
 import { useRouter } from 'next/router';
 import useStore from '@/store/index';
 import axios from 'axios'
+import env from '@/commons/env'
 const Home: NextPage = () => {
   const { productArray,updateProductArray } = useStore();
   function getProductListApi() {
     try {
-      axios.get('https://api.upsurge.finance/poolInfo/v1/avaliable')
+      axios.get(env == 'dev' ? 'https://apitest.upsurge.finance/poolInfo/v1/avaliable' : 'https://api.upsurge.finance/poolInfo/v1/avaliable')
       .then(response=>{
         if(response.data.code == 200){
           let arr = response.data.data || []

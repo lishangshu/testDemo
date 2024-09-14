@@ -24,6 +24,15 @@ export function formatTime(timestamp:any) {
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
+export function getContractMsg(errMsg = '', action = '') {
+  if (/reverted/.test(errMsg)) {
+	return action ? `${action} reverted` : 'Action reverted, please retry later'
+  } else if (/no data/.test(errMsg)) {
+	return action ? `${action} failed, please retry later!` : 'Action reverted, please retry later'
+  }
+  return errMsg
+}
+
 export function getExpireData(time:any) {
 	const targetDate = new Date(time);
 

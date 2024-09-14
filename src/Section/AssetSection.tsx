@@ -5,6 +5,7 @@ import InputBalance from "@/components/InputBalance";
 import LineCharts from "@/components/LineCharts";
 import Loading from "@/components/Loading";
 import { useTranslation } from "react-i18next";
+import env from '@/commons/env'
 
 import { toast } from 'react-toastify'
 import { USDTVAULT_ERC20, USDT_ERC20 } from "@/commons/config";
@@ -15,7 +16,7 @@ import {
   getAccount,
   getChainId
 } from "@wagmi/core";
-import { formatUsdt } from "@/commons/utils"
+import { formatUsdt, getContractMsg } from "@/commons/utils"
 import { formatUnits } from "viem"
 // import { config } from "@/wagmi";
 import { config } from '@/providers/AppKitProvider'
@@ -24,6 +25,7 @@ import { matchImg } from "@/commons/utils"
 import moment from "moment"
 import { useApolloClient, gql } from '@apollo/client';
 import useStore from '@/store/index';
+import axios from 'axios'
 
 const AssetSection = () => {
   const { t } = useTranslation("common");
@@ -37,10 +39,11 @@ const AssetSection = () => {
   const rate = 1;
   const [busy, setBusy] = useState(false);
   const router = useRouter();
-  const { abbrId, abbrLogo, abbrTitle, abbrApy, abbrVersion, abbrExpireTime, contractAddress, pid, abbrCycle, fixedDuration } = router.query
+  const { abbrId, abbrLogo, abbrTitle, abbrApy, abbrVersion, abbrExpireTime, contractAddress, pid, abbrCycle, fixedDuration, depositLimit } = router.query
   const [balance, setBalance] = useState(BigInt(0))
   const { userInfo } = useStore();
   const [receives, setReceives] = useState([])
+  const [myInvestings, setMyInvestings] = useState([])
 
   const [dailyEarn, setDailyEarn] = useState(0)
   const [totalEarn, setTotalEarn] = useState(0)
@@ -48,24 +51,39 @@ const AssetSection = () => {
   const d = moment(abbrExpireTime).diff(moment(), 'days')
   const [points] = useState(parseInt(100 / abbrCycle * d) || 0)
 
+  function getMyInvestings() {
+    const account = getAccount(config)
+    if (!account || !account.address) {
+      return
+    }
+    axios.get((env == 'dev' ? 'https://apitest.upsurge.finance/invest/v1/profile/ids/' : 'https://api.upsurge.finance/invest/v1/profile/ids/') + account.address)
+      .then(response => {
+        console.log('getMyInvestings', response)
+        if (response.data.code == 200) {
+          setMyInvestings(response.data.data.investing)
+        }
+      })
+      .catch(error => console.error(error))
+  }
+
   function inputChange(value) {
     setInputValue(value)
     console.log('input change', value, abbrApy)
 
     var daily = 0
-		if (fixedDuration == 0) {
-			daily = (value || 0) * (abbrApy || 0) / (365 * 1000000)
-		} else {
-			daily = (value || 0) * 6646 * (abbrApy || 0) / (abbrCycle * 1000000)
-		}
+    if (fixedDuration == 0) {
+      daily = (value || 0) * (abbrApy || 0) / (365 * 1000000)
+    } else {
+      daily = (value || 0) * 6646 * (abbrApy || 0) / (abbrCycle * 1000000)
+    }
     setDailyEarn(formatUsdt(daily, 4))
 
     var total = 0
     if (fixedDuration == 0) {
-			total = (value || 0) * (abbrCycle || 0) * (abbrApy || 0) / (365 * 6646 * 1000000) + (value || 0)
-		} else {
-			total = (value || 0) * (abbrApy || 0) / 1000000 + (value || 0)
-		}
+      total = (value || 0) * (abbrCycle || 0) * (abbrApy || 0) / (365 * 6646 * 1000000) + (value || 0)
+    } else {
+      total = (value || 0) * (abbrApy || 0) / 1000000 + (value || 0)
+    }
     setTotalEarn(formatUsdt(total, 4))
   }
 
@@ -146,6 +164,10 @@ const AssetSection = () => {
   function queryBalance() {
     const account = getAccount(config);
     // console.log("account", account);
+    if (!account || !account.address) {
+      toast.error('Please connect wallet first!')
+      return
+    }
     return new Promise((resolve, reject) => {
       readContract(config, {
         abi: USDT_ERC20.abi,
@@ -240,16 +262,27 @@ const AssetSection = () => {
         toast.error("Product has been ended")
         return;
       }
-      const balance = await queryBalance();
-      console.log("balance", balance);
       if (inputValue <= 0) {
         console.warn("Asset must bigger than zero");
         toast.error("Asset must bigger than zero")
         setBusy(false);
         return;
       }
-      const amount =
-        BigInt(inputValue) * BigInt(Math.pow(10, Number(USDT_ERC20.decimals)));
+      if (fixedDuration == 1) {
+        const investings = myInvestings.filter(item => item.pid == pid && item.address == contractAddress)
+        if (investings.length) {
+          toast.error('Purchase only once')
+          return
+        }
+      }
+      const amount = BigInt(inputValue * Math.pow(10, USDT_ERC20.decimals));
+      const limit = BigInt(depositLimit)
+      if (amount < limit) {
+        toast.error('Assets must bigger than ' + limit / BigInt(Math.pow(10, USDT_ERC20.decimals)) + ' USDT')
+        return
+      }
+      const balance = await queryBalance();
+      console.log("balance", balance);
       if (amount > balance) {
         console.warn("Insufficient balance");
         //$toast('Insufficient balance')
@@ -297,7 +330,7 @@ const AssetSection = () => {
       }
     } catch (e) {
       console.error(e);
-      toast.error(e.message)
+      toast.error(getContractMsg(e.message, 'Invest'))
     } finally {
       setBusy(false);
       setStep(0);
@@ -367,10 +400,10 @@ const AssetSection = () => {
       account: account.address,
     });
   }
-  
+
   async function handleRedeem() {
     if (busy) {
-    	return
+      return
     }
     setBusy(true)
     try {
@@ -397,13 +430,16 @@ const AssetSection = () => {
       }
     } catch (e) {
       console.error(e);
-      toast.error(e.message)
+      toast.error(getContractMsg(e.message, 'Redeem'))
     } finally {
       setBusy(false)
     }
   }
 
-  queryBalance()
+  useEffect(()=>{
+    queryBalance()
+    getMyInvestings()
+  },[])
 
   return (
     <section className="w-full bg-thirdary flex items-start pt-[86px] px-[109px]">
@@ -434,7 +470,7 @@ const AssetSection = () => {
 
           <div className="flex flex-col items-center">
             <div className="flex items-baseline justify-between font-600 gap-2">
-              <span className="text-[42px] flex justify-end">{((Number(abbrApy))/1000000)*100}%</span>
+              <span className="text-[42px] flex justify-end">{((Number(abbrApy)) / 1000000) * 100}%</span>
               <span className="text-coinSm">APY</span>
             </div>
             <div className="bg-manturity text-primary px-[9px] py-[5px] rounded-[2px] text-coinSm">
